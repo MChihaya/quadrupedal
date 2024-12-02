@@ -6,6 +6,7 @@ public class SelectionManager : MonoBehaviour {
     public GameObject robotPrefab;
     public Slider populationSizeSlider;
     public Slider survivalRateSlider;
+    public Slider timeScaleSlider;
     public int populationSize = 200;
     public float generationTime = 60.0f;
     public float survivalRate = 0.3f; // 新しい変数: 生存率（上位何%を保持するか）
@@ -31,6 +32,8 @@ public class SelectionManager : MonoBehaviour {
         populationSizeSlider.value = robots.Count;
         populationSize = (int)populationSizeSlider.value;
         survivalRate = survivalRateSlider.value;
+        Time.timeScale = timeScaleSlider.value;
+        
     }
 
     void FixedUpdate() {
@@ -272,6 +275,10 @@ public class SelectionManager : MonoBehaviour {
         survivalRate = survivalRateSlider.value;
     }
 
+    public void SetTimeScale() {
+        Debug.Log("Time Scale: " + timeScaleSlider.value);
+        Time.timeScale = timeScaleSlider.value;
+    }
     // Saveロジックの例
     public void Save() {
         List<GeneData> geneDataList = new List<GeneData>();

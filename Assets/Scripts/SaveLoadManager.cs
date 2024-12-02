@@ -32,7 +32,7 @@ public class SaveLoadManager : MonoBehaviour {
         string jsonData = JsonUtility.ToJson(new GeneDataList(geneDataList));
         string filePath = System.IO.Path.Combine(Application.persistentDataPath, "robots_save_data.json");
         System.IO.File.WriteAllText(filePath, jsonData);
-        // Debug.Log("Persistent Data Path: " + Application.persistentDataPath);
+        Debug.Log("Persistent Data Path: " + Application.persistentDataPath);
     }
 
     public GeneDataList LoadRobotData() {
@@ -40,7 +40,7 @@ public class SaveLoadManager : MonoBehaviour {
         if (System.IO.File.Exists(filePath)) {
             string jsonData = System.IO.File.ReadAllText(filePath);
             GeneDataList geneDataList = JsonUtility.FromJson<GeneDataList>(jsonData);
-            // Debug.Log("Loaded " + geneDataList.geneDatas.Count + " robots from " + filePath);
+            Debug.Log("Loaded " + geneDataList.geneDatas.Count + " robots from " + filePath);
             return geneDataList;
         } else {
             Debug.Log("Save data file not found in " + filePath);
