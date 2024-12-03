@@ -16,7 +16,7 @@ public class JointController2 : MonoBehaviour {
 
     private void Awake() {
         if (gene.angles.Count != joints.Count*jointPhase) {
-            gene = new Gene2(joints.Count*jointPhase, legParts.Count * 3);
+            gene = new Gene2(joints.Count*jointPhase, legParts.Count * 3, joints.Count*jointPhase, joints.Count*jointPhase);
         }
         ApplyGene();
     }

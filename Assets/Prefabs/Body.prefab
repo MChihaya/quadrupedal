@@ -540,6 +540,7 @@ GameObject:
   - component: {fileID: 7444051492617100898}
   - component: {fileID: 8841362158966222446}
   - component: {fileID: 1439484933279420501}
+  - component: {fileID: -9055156768400179829}
   m_Layer: 6
   m_Name: Body
   m_TagString: Untagged
@@ -678,7 +679,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2062536195112379290}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4f7ac2f651343f14b91a8219ce3e89b7, type: 3}
   m_Name: 
@@ -722,6 +723,46 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textComponent: {fileID: 5357321363135378649}
+--- !u!114 &-9055156768400179829
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2062536195112379290}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9a87fadadd53cd4da72e90cdf8780d2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  joints:
+  - {fileID: 3621650802564623198}
+  - {fileID: 4215733448011495461}
+  - {fileID: 4388884814921554078}
+  - {fileID: 1256705032153658406}
+  - {fileID: 6737779148064080253}
+  - {fileID: 2635956373157908918}
+  - {fileID: 7967645944639063347}
+  - {fileID: 6961117750178353598}
+  legParts:
+  - {fileID: 3221614456505186621}
+  - {fileID: 1907879042682121371}
+  - {fileID: 1392484278539187808}
+  - {fileID: 5169788201773721202}
+  - {fileID: 252759521456576148}
+  - {fileID: 7420453537918940050}
+  - {fileID: 7657287567050005582}
+  - {fileID: 8403807936904239712}
+  body: {fileID: 2062536195112379290}
+  gene:
+    angles: []
+    legSizes: []
+    bodySizes: []
+    name: 0
+    springs: []
+    dumpers: []
+  jointPhase: 10
+  timePerGene: 1
 --- !u!1 &2799046092098883007
 GameObject:
   m_ObjectHideFlags: 0

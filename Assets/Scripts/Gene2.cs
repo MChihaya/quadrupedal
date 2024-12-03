@@ -17,6 +17,14 @@ public class Gene2 {
         for (int i = 0; i < numAngles; i++) {
             angles.Add(Random.Range(-90.0f, 90.0f));
         }
+        springs = new List<float>(numSprings);
+        for (int i = 0; i < numSprings; i++) {
+            springs.Add(Random.Range(0.0f, 100.0f));
+        }
+        dumpers = new List<float>(numDumpers);
+        for (int i = 0; i < numDumpers; i++) {
+            dumpers.Add(Random.Range(0.0f, 10.0f));
+        }
         legSizes = new List<float>(numLegSizes);
         for (int i = 0; i < numLegSizes; i++) {
             legSizes.Add(0.25f);
