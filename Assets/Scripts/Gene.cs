@@ -9,6 +9,7 @@ public class Gene {
     public List<float> bodySizes;
     public int name;
 
+
     public Gene(int numAngles, int numLegSizes) {
         angles = new List<float>(numAngles);
         for (int i = 0; i < numAngles; i++) {

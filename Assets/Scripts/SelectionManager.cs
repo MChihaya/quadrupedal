@@ -289,9 +289,11 @@ public class SelectionManager : MonoBehaviour {
             geneData.legSizes = gene.legSizes;
             geneData.bodySizes = gene.bodySizes;
             geneData.name = int.Parse(robot.name);
+            geneData.distance = robot.transform.position.sqrMagnitude;
+            geneData.generation = generation;
             geneDataList.Add(geneData);
         }
-        SaveLoadManager.Instance.SaveRobotData(geneDataList);
+        SaveLoadManager.Instance.SaveRobotData(geneDataList, generation);
     }
 
     // Loadロジックの例
@@ -313,6 +315,7 @@ public class SelectionManager : MonoBehaviour {
                 robotVersion = Mathf.Max(robotVersion, geneData.name);
                 robots.Add(robot);
                 robot.GetComponent<DisplayName>().SetName();
+                generation = geneData.generation;
             }
 
             ChangeRobotSize();

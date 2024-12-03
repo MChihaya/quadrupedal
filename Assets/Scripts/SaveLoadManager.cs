@@ -30,14 +30,13 @@ public class SaveLoadManager : MonoBehaviour {
         }
     }
 
-    public void SaveRobotData(List<GeneData> geneDataList) {
+    public void SaveRobotData(List<GeneData> geneDataList, int generation) {
         DateTime now = DateTime.Now;
-        string formattedTime = now.ToString("yyyyMMdd");
-
 
         string jsonData = JsonUtility.ToJson(new GeneDataList(geneDataList));
         string filePath = System.IO.Path.Combine("Assets", "robots_save_data.json");
-        string filePathRecord = string.Format("Assets/robots_save_data", formattedTime, ".json");
+        string filePathRecord = string.Format("Assets/robots_save_data_{0}.json", generation);
+        Debug.Log(filePathRecord);
         System.IO.File.WriteAllText(filePath, jsonData);
         System.IO.File.WriteAllText(filePathRecord, jsonData);
         Debug.Log("Persistent Data Path: " + Application.persistentDataPath);

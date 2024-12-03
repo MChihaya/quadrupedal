@@ -8,6 +8,8 @@ public class GeneData {
     public List<float> legSizes;
     public List<float> bodySizes;
     public int name;
+    public int generation;
+    public float distance;
 
     public GeneData(Gene gene) {
         angles = new List<float>(gene.angles);
