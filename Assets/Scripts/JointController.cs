@@ -30,7 +30,7 @@ public class JointController : MonoBehaviour {
             ApplyGene();
         }
     }
-
+    // 実際に足を動かしているところ
     public void ApplyGene() {
         for (int i = 0; i < joints.Count; i++) {
             var joint = joints[i];
