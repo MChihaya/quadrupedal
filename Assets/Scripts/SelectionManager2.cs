@@ -56,6 +56,10 @@ public class SelectionManager2 : MonoBehaviour {
             ChangePopulationSize();
             generationTimer = 0.0f; // Reset timer after reproduction
             generation++;
+            // タイマースタート
+            foreach(var robot in robots){
+                robot.GetComponent<StopOnContact>().StartTimer();
+            }
         }
     }
     bool IsAllRobotStop(){
