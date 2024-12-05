@@ -356,6 +356,7 @@ public class SelectionManager2 : MonoBehaviour {
             geneData.legSizes = gene.legSizes;
             geneData.bodySizes = gene.bodySizes;
             geneData.name = int.Parse(robot.name);
+            geneData.generation = generation + 1;
             geneDataList.Add(geneData);
         }
         SaveLoadManager2.Instance.NewestRecordRobotData(geneDataList);
