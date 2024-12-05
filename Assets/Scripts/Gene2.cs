@@ -8,6 +8,7 @@ public class Gene2 {
     public List<float> legSizes;
     public List<float> bodySizes;
     public int name;
+    public float reward;
     public List<float> springs;
     public List<float> dumpers;
 

@@ -12,6 +12,7 @@ public class GeneData2 {
     public int name;
     public int generation;
     public float distance;
+    public float reward;
     public GeneData2(Gene2 gene) {
         angles = new List<float>(gene.angles);
         legSizes = new List<float>(gene.legSizes);

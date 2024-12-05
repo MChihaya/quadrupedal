@@ -8,6 +8,7 @@ public class SelectionManager2 : MonoBehaviour {
     public Slider populationSizeSlider;
     public Slider survivalRateSlider;
     public Slider timeScaleSlider;
+    public GameObject goal;
     public int populationSize = 200;
     public float generationTime = 60.0f;
     public float survivalRate = 0.3f; // 新しい変数: 生存率（上位何%を保持するか）
@@ -22,7 +23,7 @@ public class SelectionManager2 : MonoBehaviour {
         if (robots == null) {
             robots = new List<GameObject>();
             for (int i = 0; i < populationSize; i++) {
-                GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, 90, 90));
+                GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, 0, 60));
                 robots.Add(robot);
                 robot.name = "" + robotVersion;
                 robot.GetComponent<DisplayName>().SetName();
@@ -56,7 +57,8 @@ public class SelectionManager2 : MonoBehaviour {
     }
 
     void SelectAndReproduce() {
-        robots.Sort((a, b) => (b.transform.position).sqrMagnitude.CompareTo((a.transform.position).sqrMagnitude));
+        // 報酬値でソート
+        robots.Sort((a, b) => b.GetComponent<JointController2>().gene.reward.CompareTo(a.GetComponent<JointController2>().gene.reward));
 
         // Display the best gene and distance
         DisplayBestGeneAndDistance();
@@ -246,7 +248,7 @@ public class SelectionManager2 : MonoBehaviour {
     }
 
     void AddRobot() {
-        GameObject robot = Instantiate(robotPrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 90, 90));
+        GameObject robot = Instantiate(robotPrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 60));
         robots.Add(robot);
         robot.name = "" + robotVersion;
         robot.GetComponent<DisplayName>().SetName();
@@ -269,7 +271,7 @@ public class SelectionManager2 : MonoBehaviour {
         }
     }
 
-    // ロボットのサイズを遺伝子に適用する
+    // ロボットのサイズを遺伝子に適用する。報酬値をリセットする
     public void ApplyGene() {
         for (int i = 0; i < robots.Count; i++) {
             // 胴体のサイズを遺伝子に適用
@@ -285,6 +287,14 @@ public class SelectionManager2 : MonoBehaviour {
                 robots[i].GetComponent<JointController2>().gene.legSizes[3*j+1] = legPartR.transform.localScale.y;
                 robots[i].GetComponent<JointController2>().gene.legSizes[3*j+2] = legPartR.transform.localScale.z;
             }
+            // 報酬値=距離の逆数＋(-20)×倒れたか
+            float reward;
+            reward = 0f;
+            reward += 1 / (robots[i].transform.position - goal.transform.position).sqrMagnitude;
+            if(robots[i].GetComponent<Rigidbody>().isKinematic){
+                reward -= 20;
+            }
+            robots[i].GetComponent<JointController2>().gene.reward = reward;   
         }
     }
 
@@ -311,7 +321,9 @@ public class SelectionManager2 : MonoBehaviour {
             geneData.legSizes = gene.legSizes;
             geneData.bodySizes = gene.bodySizes;
             geneData.name = int.Parse(robot.name);
-            geneData.distance = robot.transform.position.sqrMagnitude;
+            geneData.distance = (goal.transform.position - robot.transform.position).sqrMagnitude;
+            geneData.reward = gene.reward;
+            geneData.reward = gene.reward;
             geneData.generation = generation;
             geneDataList.Add(geneData);
         }
@@ -324,7 +336,7 @@ public class SelectionManager2 : MonoBehaviour {
         if (geneDataList != null) {
             robots = new List<GameObject>();
             foreach (var geneData in geneDataList.geneDatas) {
-                GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, 90, 90));
+                GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, 0, 60));
                 //  public Gene(int numAngles, int numLegSizes)
                 robot.GetComponent<JointController2>().gene = new Gene2(geneData.angles.Count, geneData.legSizes.Count, geneData.springs.Count, geneData.dumpers.Count);
                 for (int i = 0; i < geneData.angles.Count; i++) {
