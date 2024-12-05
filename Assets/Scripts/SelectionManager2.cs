@@ -122,7 +122,7 @@ public class SelectionManager2 : MonoBehaviour {
         foreach (var bodySize in bestGene.bodySizes) {
             geneString += bodySize.ToString() + ", ";
         }
-        Debug.Log("Generation: " + generation + ",Best distance: " + robots[0].GetComponent<JointController2>().gene.reward);
+        Debug.Log("Generation: " + generation + ",Best reward: " + robots[0].GetComponent<JointController2>().gene.reward);
     }
 
     // Crossover function to mix genes of two parents
