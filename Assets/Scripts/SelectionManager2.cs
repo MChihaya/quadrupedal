@@ -17,6 +17,7 @@ public class SelectionManager2 : MonoBehaviour {
     private int generation = 0;
 
     void Start() {
+        //セーブデータがあればロードなければ初期化
         Load();
         if (robots == null) {
             robots = new List<GameObject>();
@@ -28,6 +29,7 @@ public class SelectionManager2 : MonoBehaviour {
                 robotVersion++;
             }
         }
+        // サイズ遺伝子の適応
         ApplyGene();
 
         populationSizeSlider.value = robots.Count;
@@ -42,7 +44,7 @@ public class SelectionManager2 : MonoBehaviour {
         if (generationTimer >= generationTime) {
             // ロボットのサイズを遺伝子に適用
             ApplyGene();
-
+            // 適応度によって選別
             SelectAndReproduce();
             Save();
             ResetRobots();

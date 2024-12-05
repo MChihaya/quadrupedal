@@ -22,10 +22,11 @@ public class JointController2 : MonoBehaviour {
     }
 
     private void FixedUpdate() {
-        timer += Time.deltaTime;
+        timer += Time.deltaTime;// timePerGene[s]ごとに足を動かす。
         if (timer >= timePerGene) {
             timer -= timePerGene;
             // currentGeneIndexは今何段階目の遺伝子かを表す
+            // jointPhase回やってループする。
             currentGeneIndex = (currentGeneIndex + 1) % jointPhase;
             ApplyGene();
         }
