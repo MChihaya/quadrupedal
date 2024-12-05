@@ -10,7 +10,6 @@ public class JointController2 : MonoBehaviour {
     public Gene2 gene;
     public int jointPhase = 10;
     public float timePerGene = 0.1f;
-
     private int currentGeneIndex = 0;
     private float timer = 0.0f;
 

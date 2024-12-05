@@ -9,7 +9,7 @@ public class SelectionManager2 : MonoBehaviour {
     public Slider survivalRateSlider;
     public Slider timeScaleSlider;
     public GameObject goal;
-    public int populationSize = 200;
+    public int populationSize = 50;
     public float generationTime = 60.0f;
     public float survivalRate = 0.3f; // 新しい変数: 生存率（上位何%を保持するか）
     private List<GameObject> robots;
@@ -31,8 +31,10 @@ public class SelectionManager2 : MonoBehaviour {
             }
         }
         // サイズ遺伝子の適応
-        ApplyGene();
-
+        // ApplyGene();
+        foreach(var robot in robots){
+            robot.GetComponent<StopOnContact>().StartTimer();
+        }
         populationSizeSlider.value = robots.Count;
         populationSize = (int)populationSizeSlider.value;
         survivalRate = survivalRateSlider.value;
@@ -42,12 +44,13 @@ public class SelectionManager2 : MonoBehaviour {
 
     void FixedUpdate() {
         generationTimer += Time.fixedDeltaTime;
-        if (generationTimer >= generationTime) {
+        if (generationTimer >= generationTime || IsAllRobotStop()) {
             // ロボットのサイズを遺伝子に適用
             ApplyGene();
+            SortRobotByReward();
+            Save();
             // 適応度によって選別
             SelectAndReproduce();
-            Save();
             ResetRobots();
             Load(); // Load the robots again to update the gene values
             ChangePopulationSize();
@@ -55,10 +58,20 @@ public class SelectionManager2 : MonoBehaviour {
             generation++;
         }
     }
+    bool IsAllRobotStop(){
+        bool isAllRobotStopBool = true;
+        foreach(var robot in robots){
+            isAllRobotStopBool = robot.GetComponent<Rigidbody>().isKinematic && isAllRobotStopBool;
+        }
+        return isAllRobotStopBool;
+    }
 
-    void SelectAndReproduce() {
+    void SortRobotByReward(){
         // 報酬値でソート
         robots.Sort((a, b) => b.GetComponent<JointController2>().gene.reward.CompareTo(a.GetComponent<JointController2>().gene.reward));
+    }
+    void SelectAndReproduce() {
+        
 
         // Display the best gene and distance
         DisplayBestGeneAndDistance();
@@ -105,7 +118,7 @@ public class SelectionManager2 : MonoBehaviour {
         foreach (var bodySize in bestGene.bodySizes) {
             geneString += bodySize.ToString() + ", ";
         }
-        Debug.Log("Generation: " + generation + ",Best distance: " + (robots[0].transform.position).sqrMagnitude);
+        Debug.Log("Generation: " + generation + ",Best distance: " + robots[0].GetComponent<JointController2>().gene.reward);
     }
 
     // Crossover function to mix genes of two parents
@@ -288,13 +301,12 @@ public class SelectionManager2 : MonoBehaviour {
                 robots[i].GetComponent<JointController2>().gene.legSizes[3*j+2] = legPartR.transform.localScale.z;
             }
             // 報酬値=距離の逆数＋(-20)×倒れたか
-            float reward;
-            reward = 0f;
+            float reward = 0.0f;
             reward += 1 / (robots[i].transform.position - goal.transform.position).sqrMagnitude;
             if(robots[i].GetComponent<Rigidbody>().isKinematic){
-                reward -= 20;
+                reward -= (60.0f - robots[i].GetComponent<StopOnContact>().timer) * 0.1f;
             }
-            robots[i].GetComponent<JointController2>().gene.reward = reward;   
+            robots[i].GetComponent<JointController2>().gene.reward = reward;
         }
     }
 
@@ -322,7 +334,6 @@ public class SelectionManager2 : MonoBehaviour {
             geneData.bodySizes = gene.bodySizes;
             geneData.name = int.Parse(robot.name);
             geneData.distance = (goal.transform.position - robot.transform.position).sqrMagnitude;
-            geneData.reward = gene.reward;
             geneData.reward = gene.reward;
             geneData.generation = generation;
             geneDataList.Add(geneData);
