@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.UI;
 
 public class SelectionManager2 : MonoBehaviour {
@@ -48,9 +49,10 @@ public class SelectionManager2 : MonoBehaviour {
             // ロボットのサイズを遺伝子に適用
             ApplyGene();
             SortRobotByReward();
-            Save();
+            ResultSave();
             // 適応度によって選別
             SelectAndReproduce();
+            NewestRecord();
             ResetRobots();
             Load(); // Load the robots again to update the gene values
             ChangePopulationSize();
@@ -75,8 +77,6 @@ public class SelectionManager2 : MonoBehaviour {
         robots.Sort((a, b) => b.GetComponent<JointController2>().gene.reward.CompareTo(a.GetComponent<JointController2>().gene.reward));
     }
     void SelectAndReproduce() {
-        
-
         // Display the best gene and distance
         DisplayBestGeneAndDistance();
 
@@ -326,7 +326,7 @@ public class SelectionManager2 : MonoBehaviour {
         Time.timeScale = timeScaleSlider.value;
     }
     // Saveロジックの例
-    public void Save() {
+    public void ResultSave() {
         List<GeneData2> geneDataList = new List<GeneData2>();
         foreach (var robot in robots) {
             Gene2 gene = robot.GetComponent<JointController2>().gene;
@@ -343,6 +343,22 @@ public class SelectionManager2 : MonoBehaviour {
             geneDataList.Add(geneData);
         }
         SaveLoadManager2.Instance.SaveRobotData(geneDataList, generation);
+    }
+
+    public void NewestRecord(){
+        List<GeneData2> geneDataList = new List<GeneData2>();
+        foreach (var robot in robots) {
+            Gene2 gene = robot.GetComponent<JointController2>().gene;
+            GeneData2 geneData = new GeneData2(gene);
+            geneData.angles = gene.angles;
+            geneData.springs = gene.springs;
+            geneData.dumpers = gene.dumpers;
+            geneData.legSizes = gene.legSizes;
+            geneData.bodySizes = gene.bodySizes;
+            geneData.name = int.Parse(robot.name);
+            geneDataList.Add(geneData);
+        }
+        SaveLoadManager2.Instance.NewestRecordRobotData(geneDataList);
     }
 
     // Loadロジックの例
