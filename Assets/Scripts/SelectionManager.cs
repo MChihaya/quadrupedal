@@ -297,7 +297,7 @@ public class SelectionManager : MonoBehaviour {
 
     // Loadロジックの例
     public void Load() {
-        GeneDataList2 geneDataList = SaveLoadManager2.Instance.LoadRobotData();
+        GeneDataList geneDataList = SaveLoadManager.Instance.LoadRobotData();
         if (geneDataList != null) {
             robots = new List<GameObject>();
             foreach (var geneData in geneDataList.geneDatas) {
