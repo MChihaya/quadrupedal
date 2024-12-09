@@ -103,7 +103,7 @@ public class NNBrain : Brain
     private float Sigmoid(double x) {
         return 1 / (1 - Mathf.Exp(-1 * (float)x));
     }
-    // 活性化：ハイパボリック
+    // 活性化：ハイパボリックタンジェント
     private double Tanh(double x) {
         return Math.Tanh(x);
     }

@@ -756,13 +756,18 @@ MonoBehaviour:
   - {fileID: 8403807936904239712}
   body: {fileID: 2062536195112379290}
   gene:
-    angles: []
+    robotBrain:
+      weights: []
+      biases: []
+      inputSize: 0
+      hiddenSize: 0
+      hiddenLayers: 0
+      outputSize: 0
     legSizes: []
     bodySizes: []
     name: 0
     reward: 0
-    springs: []
-    dumpers: []
+  goal: {fileID: 8203172306540753689, guid: 9c383aed9c5ec174dab925bfe3bfb600, type: 3}
   jointPhase: 10
   timePerGene: 1
 --- !u!114 &5758033068797461788
@@ -777,6 +782,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4ced16ac0c2e4eb42bd8bb916244a12d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  timer: 0
 --- !u!1 &2799046092098883007
 GameObject:
   m_ObjectHideFlags: 0

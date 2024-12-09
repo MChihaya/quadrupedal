@@ -10,11 +10,12 @@ public class SelectionManager2 : MonoBehaviour {
     public Slider populationSizeSlider;
     public Slider survivalRateSlider;
     public Slider timeScaleSlider;
-    public GameObject goal;
+    public GameObject goalPrehab;
     public int populationSize = 50;
     public float generationTime = 60.0f;
     public float survivalRate = 0.3f; // 新しい変数: 生存率（上位何%を保持するか）
     private List<GameObject> robots;
+    private GameObject goal;
     private float generationTimer = 0.0f;
     private int robotVersion = 0;
     private int generation = 0;
@@ -37,6 +38,7 @@ public class SelectionManager2 : MonoBehaviour {
         foreach(var robot in robots){
             robot.GetComponent<StopOnContact>().StartTimer();
         }
+        goal = Instantiate(goalPrehab, new Vector3(UnityEngine.Random.Range(30.0f, 50.0f), 0.5f, UnityEngine.Random.Range(-30.0f, 30.0f)), Quaternion.identity);
         populationSizeSlider.value = robots.Count;
         populationSize = (int)populationSizeSlider.value;
         survivalRate = survivalRateSlider.value;
@@ -49,6 +51,7 @@ public class SelectionManager2 : MonoBehaviour {
         if (generationTimer >= generationTime || IsAllRobotStop()) {
             // ロボットのサイズを遺伝子に適用
             ApplyGene();
+            Destroy(goal);
             SortRobotByReward();
             ResultSave();
             // 適応度によって選別
@@ -56,9 +59,9 @@ public class SelectionManager2 : MonoBehaviour {
             NewestRecord();
             ResetRobots();
             Load(); // Load the robots again to update the gene values
+            goal = Instantiate(goalPrehab, new Vector3(UnityEngine.Random.Range(20.0f, 50.0f), 0.5f, UnityEngine.Random.Range(-30.0f, 30.0f)), Quaternion.identity);
             ChangePopulationSize();
             generationTimer = 0.0f; // Reset timer after reproduction
-            generation++;
             // タイマースタート
             foreach(var robot in robots){
                 robot.GetComponent<StopOnContact>().StartTimer();
@@ -93,7 +96,7 @@ public class SelectionManager2 : MonoBehaviour {
 
             // Apply mutation with a certain probability
             childGene.robotBrain.Mutate(generation);
-
+            Mutate(childGene);
             // Replace the genes of the robots to be replaced with the new child genes
             robots[i + survivalCount].GetComponent<JointController2>().gene = childGene;
 
@@ -128,12 +131,14 @@ public class SelectionManager2 : MonoBehaviour {
 
     // Crossover function to mix genes of two parents
     Gene2 Crossover(Gene2 parent1, Gene2 parent2) {
-        Gene2 child = new Gene2(parent1.angles.Count, parent1.legSizes.Count, parent1.springs.Count, parent1.dumpers.Count);
-        
+        Gene2 child = new Gene2(parent1.robotBrain.InputSize, parent1.robotBrain.HiddenSize, parent1.robotBrain.HiddenLayers, parent1.robotBrain.OutputSize, parent1.legSizes.Count);
+        var child_dna = child.robotBrain.ToDNA();
+        double[] parent1_dna = parent1.robotBrain.ToDNA();
+        double[] parent2_dna = parent2.robotBrain.ToDNA();
         // Decide the crossover point for angles
-        int crossoverPointAngles = UnityEngine.Random.Range(0, parent1.robotBrain.ToDNA().Length);
-        for (int i = 0; i < parent1.angles.Count; i++) {
-            child.angles[i] = i < crossoverPointAngles ? parent1.angles[i] : parent2.angles[i];
+        int crossoverPointAngles = UnityEngine.Random.Range(0, parent1_dna.Length);
+        for (int i = 0; i < parent1_dna.Length; i++) {
+            child_dna[i] = i < crossoverPointAngles ? parent1_dna[i] : parent2_dna[i];
         }
 
         // Decide the crossover point for legSizes
@@ -159,14 +164,8 @@ public class SelectionManager2 : MonoBehaviour {
     }
 
 
-    /* // Mutate function to introduce random changes
+    // Mutate function to introduce random changes
     void Mutate(Gene2 gene) {
-        // Mutation logic for angles
-        for (int i = 0; i < gene.angles.Count; i++) {
-            if (UnityEngine.Random.Range(0.0f, 1.0f) < 0.1f) {
-                gene.angles[i] = UnityEngine.Random.Range(-60.0f, 60.0f);
-            }
-        }
         
         // Mutation logic for legSizes
         for (int i = 0; i < gene.legSizes.Count; i++) {
@@ -182,7 +181,7 @@ public class SelectionManager2 : MonoBehaviour {
             gene.bodySizes[1] = UnityEngine.Random.Range(1.5f, 3.0f);
             gene.bodySizes[2] = volume / (gene.bodySizes[0] * gene.bodySizes[1]);
         }
-    }*/
+    }
 
     // Change the size of the robot
     void ChangeRobotSize() {
@@ -289,7 +288,7 @@ public class SelectionManager2 : MonoBehaviour {
             }
             // 報酬値=距離の逆数＋(-20)×倒れたか
             float reward = 0.0f;
-            reward += 1 / (robots[i].transform.position - goal.transform.position).sqrMagnitude;
+            reward -= (robots[i].transform.position - goal.transform.position).sqrMagnitude;
             if(robots[i].GetComponent<Rigidbody>().isKinematic){
                 reward -= (60.0f - robots[i].GetComponent<StopOnContact>().timer) * 0.1f;
             }
