@@ -50,7 +50,7 @@ public class SaveLoadManager2 : MonoBehaviour {
     }
 
     public GeneDataList2 LoadRobotData() {
-        string filePath = System.IO.Path.Combine("Assets", "robots_save_data.json");
+        string filePath = "robots_save_data.json";
         if (System.IO.File.Exists(filePath)) {
             string jsonData = System.IO.File.ReadAllText(filePath);
             GeneDataList2 geneDataList = JsonUtility.FromJson<GeneDataList2>(jsonData);

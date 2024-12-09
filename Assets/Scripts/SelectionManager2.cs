@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.UI;
@@ -91,7 +92,7 @@ public class SelectionManager2 : MonoBehaviour {
             var childGene = Crossover(parent1, parent2);
 
             // Apply mutation with a certain probability
-            Mutate(childGene);
+            childGene.robotBrain.Mutate(generation);
 
             // Replace the genes of the robots to be replaced with the new child genes
             robots[i + survivalCount].GetComponent<JointController2>().gene = childGene;
@@ -113,7 +114,7 @@ public class SelectionManager2 : MonoBehaviour {
     void DisplayBestGeneAndDistance() {
         var bestGene = robots[0].GetComponent<JointController2>().gene;
         string geneString = "";
-        foreach (var angle in bestGene.angles) {
+        foreach (var angle in bestGene.robotBrain.ToDNA()) {
             geneString += angle.ToString() + ", ";
         }
         foreach (var legSize in bestGene.legSizes) {
@@ -130,18 +131,11 @@ public class SelectionManager2 : MonoBehaviour {
         Gene2 child = new Gene2(parent1.angles.Count, parent1.legSizes.Count, parent1.springs.Count, parent1.dumpers.Count);
         
         // Decide the crossover point for angles
-        int crossoverPointAngles = UnityEngine.Random.Range(0, parent1.angles.Count);
+        int crossoverPointAngles = UnityEngine.Random.Range(0, parent1.robotBrain.ToDNA().Length);
         for (int i = 0; i < parent1.angles.Count; i++) {
             child.angles[i] = i < crossoverPointAngles ? parent1.angles[i] : parent2.angles[i];
         }
 
-        for (int i = 0; i < parent1.springs.Count; i++) {
-            child.springs[i] = i < crossoverPointAngles ? parent1.springs[i] : parent2.springs[i];
-        }
-
-        for (int i = 0; i < parent1.dumpers.Count; i++) {
-            child.dumpers[i] = i < crossoverPointAngles ? parent1.dumpers[i] : parent2.dumpers[i];
-        }
         // Decide the crossover point for legSizes
         int crossoverPointLegSizes = UnityEngine.Random.Range(0, parent1.legSizes.Count);
         for (int i = 0; i < parent1.legSizes.Count; i++) {
@@ -165,7 +159,7 @@ public class SelectionManager2 : MonoBehaviour {
     }
 
 
-    // Mutate function to introduce random changes
+    /* // Mutate function to introduce random changes
     void Mutate(Gene2 gene) {
         // Mutation logic for angles
         for (int i = 0; i < gene.angles.Count; i++) {
@@ -174,17 +168,6 @@ public class SelectionManager2 : MonoBehaviour {
             }
         }
         
-        for (int i = 0; i < gene.springs.Count; i++) {
-            if (UnityEngine.Random.Range(0.0f, 1.0f) < 0.1f) {
-                gene.springs[i] = UnityEngine.Random.Range(0f, 100f);
-            }
-        }
-        
-        for (int i = 0; i < gene.dumpers.Count; i++) {
-            if (UnityEngine.Random.Range(0.0f, 1.0f) < 0.1f) {
-                gene.dumpers[i] = UnityEngine.Random.Range(0f, 10f);
-            }
-        }
         // Mutation logic for legSizes
         for (int i = 0; i < gene.legSizes.Count; i++) {
             if (UnityEngine.Random.Range(0.0f, 1.0f) < 0.1f) {
@@ -199,7 +182,7 @@ public class SelectionManager2 : MonoBehaviour {
             gene.bodySizes[1] = UnityEngine.Random.Range(1.5f, 3.0f);
             gene.bodySizes[2] = volume / (gene.bodySizes[0] * gene.bodySizes[1]);
         }
-    }
+    }*/
 
     // Change the size of the robot
     void ChangeRobotSize() {
@@ -331,9 +314,7 @@ public class SelectionManager2 : MonoBehaviour {
         foreach (var robot in robots) {
             Gene2 gene = robot.GetComponent<JointController2>().gene;
             GeneData2 geneData = new GeneData2(gene);
-            geneData.angles = gene.angles;
-            geneData.springs = gene.springs;
-            geneData.dumpers = gene.dumpers;
+            geneData.robotdna = gene.robotBrain.ToDNA().ToList<double>();
             geneData.legSizes = gene.legSizes;
             geneData.bodySizes = gene.bodySizes;
             geneData.name = int.Parse(robot.name);
@@ -350,9 +331,7 @@ public class SelectionManager2 : MonoBehaviour {
         foreach (var robot in robots) {
             Gene2 gene = robot.GetComponent<JointController2>().gene;
             GeneData2 geneData = new GeneData2(gene);
-            geneData.angles = gene.angles;
-            geneData.springs = gene.springs;
-            geneData.dumpers = gene.dumpers;
+            geneData.robotdna = gene.robotBrain.ToDNA().ToList<double>();
             geneData.legSizes = gene.legSizes;
             geneData.bodySizes = gene.bodySizes;
             geneData.name = int.Parse(robot.name);
@@ -370,12 +349,8 @@ public class SelectionManager2 : MonoBehaviour {
             foreach (var geneData in geneDataList.geneDatas) {
                 GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, 0, 60));
                 //  public Gene(int numAngles, int numLegSizes)
-                robot.GetComponent<JointController2>().gene = new Gene2(geneData.angles.Count, geneData.legSizes.Count, geneData.springs.Count, geneData.dumpers.Count);
-                for (int i = 0; i < geneData.angles.Count; i++) {
-                    robot.GetComponent<JointController2>().gene.angles[i] = geneData.angles[i];
-                    robot.GetComponent<JointController2>().gene.springs[i] = geneData.springs[i];
-                    robot.GetComponent<JointController2>().gene.dumpers[i] = geneData.dumpers[i];
-                }
+                robot.GetComponent<JointController2>().gene = new Gene2(robot.GetComponent<JointController2>().joints.Count + 5, 1, 2 * robot.GetComponent<JointController2>().joints.Count, robot.GetComponent<JointController2>().joints.Count, geneData.legSizes.Count * 3);
+                robot.GetComponent<JointController2>().gene.robotBrain.SetDNA(geneData.robotdna.ToArray()); 
                 robot.GetComponent<JointController2>().gene.legSizes = geneData.legSizes;
                 robot.GetComponent<JointController2>().gene.bodySizes = geneData.bodySizes;
                 robot.name = geneData.name.ToString();

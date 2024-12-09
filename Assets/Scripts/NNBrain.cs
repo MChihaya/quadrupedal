@@ -108,7 +108,7 @@ public class NNBrain : Brain
         return Math.Tanh(x);
     }
 
-    private void SetDNA(float[] dna, bool mutation = true) {
+    public void SetDNA(double[] dna, bool mutation = true) {
         var index = 0;
         foreach(var b in Biases) {
             index = SetDNA(b, dna, index);
@@ -129,7 +129,7 @@ public class NNBrain : Brain
         return dna.ToArray();
     }
     // dnaを行列の値としてセットする。
-    private int SetDNA(Matrix m, float[] dna, int index) {
+    private int SetDNA(Matrix m, double[] dna, int index) {
         for(int r = 0; r < m.Row; r++) {
             for(int c = 0; c < m.Column; c++) {
                 m[r, c] = dna[index];

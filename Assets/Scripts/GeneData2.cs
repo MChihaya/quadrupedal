@@ -1,25 +1,22 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
 public class GeneData2 {
-    public List<float> angles;
+    public List<double> robotdna;
     public List<float> legSizes;
     public List<float> bodySizes;
-    public List<float> springs;
-    public List<float> dumpers;
     public int name;
     public int generation;
     public float distance;
     public float reward;
     public GeneData2(Gene2 gene) {
-        angles = new List<float>(gene.angles);
+        robotdna = gene.robotBrain.ToDNA().ToList<double>();
         legSizes = new List<float>(gene.legSizes);
         bodySizes = new List<float>(gene.bodySizes);
         name = gene.name;
-        springs = new List<float>(gene.springs);
-        dumpers = new List<float>(gene.dumpers);
     }
 }
 

@@ -8,40 +8,46 @@ public class JointController2 : MonoBehaviour {
     public List<GameObject> legParts;
     public GameObject body;
     public Gene2 gene;
+    public GameObject goal;
     public int jointPhase = 10;
     public float timePerGene = 0.1f;
-    private int currentGeneIndex = 0;
     private float timer = 0.0f;
 
     private void Awake() {
-        if (gene.angles.Count != joints.Count*jointPhase) {
-            gene = new Gene2(joints.Count*jointPhase, legParts.Count * 3, joints.Count*jointPhase, joints.Count*jointPhase);
+        if (gene.robotBrain.InputSize != joints.Count + 5) {
+            gene = new Gene2(joints.Count + 5, 1, 2 * joints.Count, joints.Count, legParts.Count * 3);
         }
-        ApplyGene();
+        MoveJoint();
     }
 
     private void FixedUpdate() {
         timer += Time.deltaTime;// timePerGene[s]ごとに足を動かす。
         if (timer >= timePerGene) {
             timer -= timePerGene;
-            // currentGeneIndexは今何段階目の遺伝子かを表す
-            // jointPhase回やってループする。
-            currentGeneIndex = (currentGeneIndex + 1) % jointPhase;
-            ApplyGene();
+            MoveJoint();
         }
     }
     // 実際に足を動かしているところ
-    public void ApplyGene() {
+    public void MoveJoint() {
+        var observation = new List<double>(); 
         for (int i = 0; i < joints.Count; i++) {
             var joint = joints[i];
-            var angle = gene.angles[i + currentGeneIndex * joints.Count];
-            var strong = gene.springs[i + currentGeneIndex * joints.Count];
-            var damper = gene.dumpers[i + currentGeneIndex * joints.Count];
+            observation.Add(joint.angle);
+        }
+        Vector3 distance = body.transform.position - goal.transform.position;
+        observation.Add(distance.sqrMagnitude);
+        observation.Add(Vector3.Angle(new Vector3(0f, 0f, 0f), distance));
+        observation.Add(body.transform.rotation.x);
+        observation.Add(body.transform.rotation.y);
+        observation.Add(body.transform.rotation.z);
+        double[] nextAction = gene.robotBrain.GetAction(observation);
 
+        for (int i = 0; i < joints.Count; i++){
+            var joint = joints[i];
             var spring = joint.spring;
-            spring.targetPosition = angle;
-            spring.spring = strong;  // 強度を十分に高く設定
-            spring.damper = damper;  // ダンピングを適用して安定化
+            spring.targetPosition = (float) nextAction[i];
+            spring.spring = 100f;  // 強度を十分に高く設定
+            spring.damper = 10f;  // ダンピングを適用して安定化
             joint.spring = spring;
             joint.useSpring = true;  // Springを有効にする
         }
