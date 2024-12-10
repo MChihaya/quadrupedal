@@ -194,7 +194,7 @@ public class NNBrain : Brain
     }
     // 世代を追うごとに変異確率を下げていく
     private float MutRate(int generation) {
-        return 0.2f * (float)Math.Max(0, 1 - generation / 100);
+        return 0.2f * (float)Math.Max(0, 1 - generation / 10000);
     }
 
     public override void Save(string path) {

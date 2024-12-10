@@ -35,7 +35,7 @@ public class SaveLoadManager2 : MonoBehaviour {
         string formatedNow = now.ToString("yyyyMMddHHmmss");
         string jsonData = JsonUtility.ToJson(new GeneDataList2(geneDataList));
         //string filePath = System.IO.Path.Combine("Assets", "robots_save_data.json");
-        string filePathRecord = "SaveData/neuro5/" + string.Format("robots_save_data_{0}_{1}.json", generation, formatedNow);
+        string filePathRecord = "SaveData/neuroWithoutSize/" + string.Format("robots_save_data_{0}_{1}.json", generation, formatedNow);
         Debug.Log(filePathRecord);
         //System.IO.File.WriteAllText(filePath, jsonData);
         System.IO.File.WriteAllText(filePathRecord, jsonData);
@@ -44,13 +44,13 @@ public class SaveLoadManager2 : MonoBehaviour {
 
     public void NewestRecordRobotData(List<GeneData2> geneDataList){
         string jsonData = JsonUtility.ToJson(new GeneDataList2(geneDataList));
-        string filePath = "SaveData/neuro5/" + "robots_save_data.json";
+        string filePath = "SaveData/neuroWithoutSize/" + "robots_save_data.json";
         Debug.Log(filePath);
         System.IO.File.WriteAllText(filePath, jsonData);
     }
 
     public GeneDataList2 LoadRobotData() {
-        string filePath = "SaveData/neuro5/" + "robots_save_data.json";
+        string filePath = "SaveData/neuroWithoutSize/" + "robots_save_data.json";
         if (System.IO.File.Exists(filePath)) {
             string jsonData = System.IO.File.ReadAllText(filePath);
             GeneDataList2 geneDataList = JsonUtility.FromJson<GeneDataList2>(jsonData);

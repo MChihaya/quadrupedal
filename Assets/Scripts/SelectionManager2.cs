@@ -108,7 +108,7 @@ public class SelectionManager2 : MonoBehaviour {
 
             // Apply mutation with a certain probability
             childGene.robotBrain.Mutate(generation);
-            Mutate(childGene);
+            // Mutate(childGene);
             // Replace the genes of the robots to be replaced with the new child genes
             robots[i + survivalCount].GetComponent<JointController2>().gene = childGene;
 
