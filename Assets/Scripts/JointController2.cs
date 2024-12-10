@@ -15,7 +15,7 @@ public class JointController2 : MonoBehaviour {
 
     private void Awake() {
         if (gene.robotBrain.InputSize != joints.Count + 5) {
-            gene = new Gene2(joints.Count + 5, 1, 2 * joints.Count, joints.Count, legParts.Count * 3);
+            gene = new Gene2(joints.Count+ 7, 2 * joints.Count, 2, joints.Count, legParts.Count * 3);
         }
         MoveJoint();
     }
@@ -34,23 +34,24 @@ public class JointController2 : MonoBehaviour {
             var joint = joints[i];
             observation.Add(Mathf.Repeat(joint.angle, 360f) / 360f);
         }
-        Vector3 distance = body.transform.position - goal.transform.position;
-        observation.Add(distance.sqrMagnitude / 4000f);
-        observation.Add(Mathf.Repeat(Vector3.Angle(new Vector3(0f, 0f, 0f), distance), 360f) / 360f);
+        Vector3 distance = goal.transform.position - body.transform.position;
+        observation.Add(distance.x / 25f);
+        observation.Add(distance.z / 25f);
         observation.Add(Mathf.Repeat(body.transform.rotation.x, 360f) / 360f);
         observation.Add(Mathf.Repeat(body.transform.rotation.y, 360f) / 360f);
         observation.Add(Mathf.Repeat(body.transform.rotation.z, 360f) / 360f);
+        observation.Add(GetComponent<Rigidbody>().velocity.x / 10f);
+        observation.Add(GetComponent<Rigidbody>().velocity.z / 10f);
         double[] nextAction = gene.robotBrain.GetAction(observation);
 
         for (int i = 0; i < joints.Count; i++){
             var joint = joints[i];
             var spring = joint.spring;
-            spring.targetPosition = (float) nextAction[i] * 180f;
+            spring.targetPosition = ((float) nextAction[i] - 0.5f) * 180.0f;
             spring.spring = 100f;  // 強度を十分に高く設定
             spring.damper = 10f;  // ダンピングを適用して安定化
             joint.spring = spring;
             joint.useSpring = true;  // Springを有効にする
         }
-        Debug.Log("Next Action: " + nextAction[0]);
     }
 }

@@ -16,18 +16,19 @@ public class StopOnContact : MonoBehaviour
         startTime = Time.time;
     }
 
-    // Update is called once per frame
     void OnCollisionEnter(Collision collision){
         rbs = GetComponentsInChildren<Rigidbody>();
         if (collision.gameObject.CompareTag("Plane"))
         {
-            timer = Time.time - startTime;
-            foreach (var rb in rbs)
-            {   
-                rb.velocity = Vector3.zero;         // 移動速度をゼロに
-                rb.angularVelocity = Vector3.zero; // 回転速度をゼロに
-                rb.isKinematic = true;             // 動きを完全に停止
-            }
+            // timer = Time.time - startTime;
+            // foreach (var rb in rbs)
+            // {   
+            //     rb.velocity = Vector3.zero;         // 移動速度をゼロに
+            //     rb.angularVelocity = Vector3.zero; // 回転速度をゼロに
+            //     rb.isKinematic = true;             // 動きを完全に停止
+            // }
+
+            // GetComponent<JointController2>().gene.reward -= 4.0f;
 
         }
     }

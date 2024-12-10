@@ -65,12 +65,15 @@ public class NNBrain : Brain
     }
     // 行列の作成：各層の計算を行列で表している。
     private void CreateMatrix(int inputSize, int hiddenSize, int hiddenLayers, int outputSize) {
+        int parameterNum = 0;
         for(int i = 0; i < hiddenLayers + 1; i++) {
             int inSize = (i == 0) ? inputSize : hiddenSize;
             int outSize = (i == hiddenLayers) ? outputSize : hiddenSize;
             Weights.Add(new Matrix(inSize, outSize));
             Biases.Add(new Matrix(1, outSize));
+            parameterNum += inSize * outSize + outSize;
         }
+        Debug.Log($"Created a neural network with {parameterNum} parameters.{inputSize} {hiddenSize} {hiddenLayers} {outputSize}");
     }
 
     // 順方向に計算する。
@@ -85,7 +88,7 @@ public class NNBrain : Brain
             var b = Biases[i];
             if(i != HiddenLayers) {
                 for(int c = 0; c < b.Column; c++) {
-                    output[0, c] = Tanh(output[0, c] + b[0, c]);
+                    output[0, c] = Sigmoid(output[0, c] + b[0, c]);
                 }
             }
             else {

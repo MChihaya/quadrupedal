@@ -35,10 +35,12 @@ public class SelectionManager2 : MonoBehaviour {
         }
         // サイズ遺伝子の適応
         // ApplyGene();
+        SetGoal();
         foreach(var robot in robots){
             robot.GetComponent<StopOnContact>().StartTimer();
+            robot.GetComponent<JointController2>().goal = goal;
         }
-        goal = Instantiate(goalPrehab, new Vector3(UnityEngine.Random.Range(30.0f, 50.0f), 0.5f, UnityEngine.Random.Range(-30.0f, 30.0f)), Quaternion.identity);
+        
         populationSizeSlider.value = robots.Count;
         populationSize = (int)populationSizeSlider.value;
         survivalRate = survivalRateSlider.value;
@@ -59,14 +61,24 @@ public class SelectionManager2 : MonoBehaviour {
             NewestRecord();
             ResetRobots();
             Load(); // Load the robots again to update the gene values
-            goal = Instantiate(goalPrehab, new Vector3(UnityEngine.Random.Range(20.0f, 50.0f), 0.5f, UnityEngine.Random.Range(-30.0f, 30.0f)), Quaternion.identity);
+            SetGoal();
             ChangePopulationSize();
             generationTimer = 0.0f; // Reset timer after reproduction
             // タイマースタート
             foreach(var robot in robots){
                 robot.GetComponent<StopOnContact>().StartTimer();
+                robot.GetComponent<JointController2>().goal = goal;
             }
         }
+    }
+
+    void SetGoal(){
+        // float radius = UnityEngine.Random.Range(20f, 50f);
+        float radius = 30f;
+        float degree  = UnityEngine.Random.Range(0f, 360f);
+        float x = radius * Mathf.Cos(degree * Mathf.Deg2Rad);
+        float z = radius * Mathf.Sin(degree * Mathf.Deg2Rad);
+        goal = Instantiate(goalPrehab, new Vector3(x, 0f, z), Quaternion.identity);
     }
     bool IsAllRobotStop(){
         bool isAllRobotStopBool = true;
@@ -288,11 +300,12 @@ public class SelectionManager2 : MonoBehaviour {
             }
             // 報酬値=距離の逆数＋(-20)×倒れたか
             float reward = 0.0f;
-            reward -= (robots[i].transform.position - goal.transform.position).sqrMagnitude;
+            reward -= 6 * (robots[i].transform.position - goal.transform.position).sqrMagnitude / goal.transform.position.sqrMagnitude;
             if(robots[i].GetComponent<Rigidbody>().isKinematic){
                 reward -= (60.0f - robots[i].GetComponent<StopOnContact>().timer) * 0.1f;
             }
-            robots[i].GetComponent<JointController2>().gene.reward = reward;
+            // reward = robots[i].transform.position.sqrMagnitude;
+            robots[i].GetComponent<JointController2>().gene.reward += reward;
         }
     }
 
@@ -347,8 +360,7 @@ public class SelectionManager2 : MonoBehaviour {
             robots = new List<GameObject>();
             foreach (var geneData in geneDataList.geneDatas) {
                 GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, 0, 60));
-                //  public Gene(int numAngles, int numLegSizes)
-                robot.GetComponent<JointController2>().gene = new Gene2(robot.GetComponent<JointController2>().joints.Count + 5, 1, 2 * robot.GetComponent<JointController2>().joints.Count, robot.GetComponent<JointController2>().joints.Count, geneData.legSizes.Count * 3);
+                robot.GetComponent<JointController2>().gene = new Gene2(robot.GetComponent<JointController2>().joints.Count + 7, 2 * robot.GetComponent<JointController2>().joints.Count, 2, robot.GetComponent<JointController2>().joints.Count, geneData.legSizes.Count * 3);
                 robot.GetComponent<JointController2>().gene.robotBrain.SetDNA(geneData.robotdna.ToArray()); 
                 robot.GetComponent<JointController2>().gene.legSizes = geneData.legSizes;
                 robot.GetComponent<JointController2>().gene.bodySizes = geneData.bodySizes;

@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
@@ -8,7 +9,7 @@ public class Gene2 {
     public List<float> legSizes;
     public List<float> bodySizes;
     public int name;
-    public float reward;
+    public float reward = 0f;
 
 
     public Gene2(int inputSize, int hiddenSize, int hiddenLayers, int outputSize, int numLegSizes) {
