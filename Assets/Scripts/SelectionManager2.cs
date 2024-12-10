@@ -74,8 +74,8 @@ public class SelectionManager2 : MonoBehaviour {
 
     void SetGoal(){
         // float radius = UnityEngine.Random.Range(20f, 50f);
-        float radius = 30f;
-        float degree  = UnityEngine.Random.Range(0f, 360f);
+        float radius = 50f;
+        float degree  = 0f; //UnityEngine.Random.Range(0f, 360f);
         float x = radius * Mathf.Cos(degree * Mathf.Deg2Rad);
         float z = radius * Mathf.Sin(degree * Mathf.Deg2Rad);
         goal = Instantiate(goalPrehab, new Vector3(x, 0f, z), Quaternion.identity);
@@ -108,7 +108,7 @@ public class SelectionManager2 : MonoBehaviour {
 
             // Apply mutation with a certain probability
             childGene.robotBrain.Mutate(generation);
-            Mutate(childGene);
+            // Mutate(childGene);
             // Replace the genes of the robots to be replaced with the new child genes
             robots[i + survivalCount].GetComponent<JointController2>().gene = childGene;
 
@@ -360,7 +360,7 @@ public class SelectionManager2 : MonoBehaviour {
             robots = new List<GameObject>();
             foreach (var geneData in geneDataList.geneDatas) {
                 GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, 0, 60));
-                robot.GetComponent<JointController2>().gene = new Gene2(robot.GetComponent<JointController2>().joints.Count + 7, 2 * robot.GetComponent<JointController2>().joints.Count, 2, robot.GetComponent<JointController2>().joints.Count, geneData.legSizes.Count * 3);
+                robot.GetComponent<JointController2>().gene = new Gene2(robot.GetComponent<JointController2>().joints.Count + 5, 2 * robot.GetComponent<JointController2>().joints.Count, 1, robot.GetComponent<JointController2>().joints.Count, geneData.legSizes.Count * 3);
                 robot.GetComponent<JointController2>().gene.robotBrain.SetDNA(geneData.robotdna.ToArray()); 
                 robot.GetComponent<JointController2>().gene.legSizes = geneData.legSizes;
                 robot.GetComponent<JointController2>().gene.bodySizes = geneData.bodySizes;

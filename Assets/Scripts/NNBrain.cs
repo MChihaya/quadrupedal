@@ -10,8 +10,8 @@ public class NNBrain : Brain
 {
 
     private float MutationRate { get; set; } = 0.20f;
-    private float RandomMin { get; set; } = -1;
-    private float RandomMax { get; set; } = 1;
+    private float RandomMin { get; set; } = -10f;
+    private float RandomMax { get; set; } = 10f;
 
     // List of biases and weights of each layer
     // 重み
@@ -73,7 +73,7 @@ public class NNBrain : Brain
             Biases.Add(new Matrix(1, outSize));
             parameterNum += inSize * outSize + outSize;
         }
-        Debug.Log($"Created a neural network with {parameterNum} parameters.{inputSize} {hiddenSize} {hiddenLayers} {outputSize}");
+        // Debug.Log($"Created a neural network with {parameterNum} parameters.{inputSize} {hiddenSize} {hiddenLayers} {outputSize}");
     }
 
     // 順方向に計算する。
@@ -180,7 +180,7 @@ public class NNBrain : Brain
                     var X = UnityEngine.Random.value;
                     var Y = UnityEngine.Random.value;
                     var Z1 = (float)Math.Sqrt(-2 * Math.Log(X)) * (float)Math.Cos(2 * Math.PI * Y);
-                    newM[r, c] = Z1;
+                    newM[r, c] = Z1 + UnityEngine.Random.Range(RandomMin, RandomMax);
                 }
                 else if(mut < mutRate) {
                     var X = UnityEngine.Random.value;
