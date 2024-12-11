@@ -150,7 +150,7 @@ public class SelectionManager2 : MonoBehaviour {
         double[] parent1_dna = parent1.robotBrain.ToDNA();
         double[] parent2_dna = parent2.robotBrain.ToDNA();
         // Decide the crossover point for angles
-        int crossoverPointAngles = UnityEngine.Random.Range(0, parent1_dna.Length);
+        int crossoverPointAngles = parent1_dna.Length;// UnityEngine.Random.Range(0, parent1_dna.Length);
         for (int i = 0; i < parent1_dna.Length; i++) {
             child_dna[i] = i < crossoverPointAngles ? parent1_dna[i] : parent2_dna[i];
         }
@@ -362,7 +362,7 @@ public class SelectionManager2 : MonoBehaviour {
             robots = new List<GameObject>();
             foreach (var geneData in geneDataList.geneDatas) {
                 GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, 0, 60));
-                robot.GetComponent<JointController2>().gene = new Gene2(robot.GetComponent<JointController2>().joints.Count + 5, 2 * robot.GetComponent<JointController2>().joints.Count, 1, robot.GetComponent<JointController2>().joints.Count, geneData.legSizes.Count * 3);
+                robot.GetComponent<JointController2>().gene = new Gene2(robot.GetComponent<JointController2>().joints.Count + 5, 20 * robot.GetComponent<JointController2>().joints.Count, 1, robot.GetComponent<JointController2>().joints.Count, geneData.legSizes.Count * 3);
                 robot.GetComponent<JointController2>().gene.robotBrain.SetDNA(geneData.robotdna.ToArray()); 
                 robot.GetComponent<JointController2>().gene.legSizes = geneData.legSizes;
                 robot.GetComponent<JointController2>().gene.bodySizes = geneData.bodySizes;
