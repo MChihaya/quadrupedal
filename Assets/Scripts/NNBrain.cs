@@ -180,7 +180,7 @@ public class NNBrain : Brain
                     var X = UnityEngine.Random.value;
                     var Y = UnityEngine.Random.value;
                     var Z1 = (float)Math.Sqrt(-2 * Math.Log(X)) * (float)Math.Cos(2 * Math.PI * Y);
-                    newM[r, c] = UnityEngine.Random.Range(RandomMin, RandomMax);
+                    newM[r, c] = Z1;
                 }
                 else if(mut < mutRate) {
                     var X = UnityEngine.Random.value;
@@ -194,7 +194,7 @@ public class NNBrain : Brain
     }
     // 世代を追うごとに変異確率を下げていく
     private float MutRate(int generation) {
-        return 0.2f * (float)Math.Max(0, 1 - generation / 10000);
+        return 0.2f * (float)Math.Max(0, 1 - generation / 3000);
     }
 
     public override void Save(string path) {
