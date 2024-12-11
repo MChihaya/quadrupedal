@@ -55,7 +55,9 @@ public class SelectionManager2 : MonoBehaviour {
             ApplyGene();
             Destroy(goal);
             SortRobotByReward();
-            ResultSave();
+            if(generation % 100 == 0){
+                ResultSave();
+            }
             // 適応度によって選別
             SelectAndReproduce();
             NewestRecord();
