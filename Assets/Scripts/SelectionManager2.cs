@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.UI;
@@ -11,7 +12,7 @@ public class SelectionManager2 : MonoBehaviour {
     public Slider timeScaleSlider;
     public GameObject goal;
     public int populationSize = 50;
-    public float generationTime = 60.0f;
+    public float generationTime = 10.0f;
     public float survivalRate = 0.3f; // 新しい変数: 生存率（上位何%を保持するか）
     private List<GameObject> robots;
     private float generationTimer = 0.0f;
@@ -24,7 +25,7 @@ public class SelectionManager2 : MonoBehaviour {
         if (robots == null) {
             robots = new List<GameObject>();
             for (int i = 0; i < populationSize; i++) {
-                GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, 0, 60));
+                GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, 0, 90));
                 robots.Add(robot);
                 robot.name = "" + robotVersion;
                 robot.GetComponent<DisplayName>().SetName();
@@ -45,11 +46,15 @@ public class SelectionManager2 : MonoBehaviour {
 
     void FixedUpdate() {
         generationTimer += Time.fixedDeltaTime;
+        //Debug.Log("Generation: " + generation + ", Generation Timer: " + generationTimer);
         if (generationTimer >= generationTime || IsAllRobotStop()) {
             // ロボットのサイズを遺伝子に適用
             ApplyGene();
             SortRobotByReward();
-            ResultSave();
+            if(generation % 100 == 0){
+                ResultSave();
+            }
+            BestRobotSave();
             // 適応度によって選別
             SelectAndReproduce();
             NewestRecord();
@@ -57,7 +62,7 @@ public class SelectionManager2 : MonoBehaviour {
             Load(); // Load the robots again to update the gene values
             ChangePopulationSize();
             generationTimer = 0.0f; // Reset timer after reproduction
-            generation++;
+            //generation++;
             // タイマースタート
             foreach(var robot in robots){
                 robot.GetComponent<StopOnContact>().StartTimer();
@@ -127,7 +132,7 @@ public class SelectionManager2 : MonoBehaviour {
 
     // Crossover function to mix genes of two parents
     Gene2 Crossover(Gene2 parent1, Gene2 parent2) {
-        Gene2 child = new Gene2(parent1.angles.Count, parent1.legSizes.Count, parent1.springs.Count, parent1.dumpers.Count);
+        Gene2 child = new Gene2(parent1.angles.Count, parent1.legSizes.Count);
         
         // Decide the crossover point for angles
         int crossoverPointAngles = UnityEngine.Random.Range(0, parent1.angles.Count);
@@ -135,13 +140,6 @@ public class SelectionManager2 : MonoBehaviour {
             child.angles[i] = i < crossoverPointAngles ? parent1.angles[i] : parent2.angles[i];
         }
 
-        for (int i = 0; i < parent1.springs.Count; i++) {
-            child.springs[i] = i < crossoverPointAngles ? parent1.springs[i] : parent2.springs[i];
-        }
-
-        for (int i = 0; i < parent1.dumpers.Count; i++) {
-            child.dumpers[i] = i < crossoverPointAngles ? parent1.dumpers[i] : parent2.dumpers[i];
-        }
         // Decide the crossover point for legSizes
         int crossoverPointLegSizes = UnityEngine.Random.Range(0, parent1.legSizes.Count);
         for (int i = 0; i < parent1.legSizes.Count; i++) {
@@ -174,17 +172,6 @@ public class SelectionManager2 : MonoBehaviour {
             }
         }
         
-        for (int i = 0; i < gene.springs.Count; i++) {
-            if (UnityEngine.Random.Range(0.0f, 1.0f) < 0.1f) {
-                gene.springs[i] = UnityEngine.Random.Range(0f, 100f);
-            }
-        }
-        
-        for (int i = 0; i < gene.dumpers.Count; i++) {
-            if (UnityEngine.Random.Range(0.0f, 1.0f) < 0.1f) {
-                gene.dumpers[i] = UnityEngine.Random.Range(0f, 10f);
-            }
-        }
         // Mutation logic for legSizes
         for (int i = 0; i < gene.legSizes.Count; i++) {
             if (UnityEngine.Random.Range(0.0f, 1.0f) < 0.1f) {
@@ -265,7 +252,7 @@ public class SelectionManager2 : MonoBehaviour {
     }
 
     void AddRobot() {
-        GameObject robot = Instantiate(robotPrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 60));
+        GameObject robot = Instantiate(robotPrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 90));
         robots.Add(robot);
         robot.name = "" + robotVersion;
         robot.GetComponent<DisplayName>().SetName();
@@ -304,13 +291,11 @@ public class SelectionManager2 : MonoBehaviour {
                 robots[i].GetComponent<JointController2>().gene.legSizes[3*j+1] = legPartR.transform.localScale.y;
                 robots[i].GetComponent<JointController2>().gene.legSizes[3*j+2] = legPartR.transform.localScale.z;
             }
-            // 報酬値=距離の逆数＋(-20)×倒れたか
+            // 報酬値=-ゴールまでの距離-早く止まるほど低評価
             float reward = 0.0f;
-            reward += 1 / (robots[i].transform.position - goal.transform.position).sqrMagnitude;
-            if(robots[i].GetComponent<Rigidbody>().isKinematic){
-                reward -= (60.0f - robots[i].GetComponent<StopOnContact>().timer) * 0.1f;
-            }
-            robots[i].GetComponent<JointController2>().gene.reward = reward;
+            reward -=  (robots[i].transform.position - goal.transform.position).sqrMagnitude;
+            
+            robots[i].GetComponent<JointController2>().gene.reward += reward;
         }
     }
 
@@ -344,15 +329,28 @@ public class SelectionManager2 : MonoBehaviour {
         }
         SaveLoadManager2.Instance.SaveRobotData(geneDataList, generation);
     }
-
+    public void BestRobotSave() {
+        List<GeneData2> geneDataList = new List<GeneData2>();
+        for (int i = 0; i < 3; i++){
+            Gene2 gene = robots[i].GetComponent<JointController2>().gene;
+            GeneData2 geneData = new GeneData2(gene);
+            geneData.angles = gene.angles;
+            geneData.legSizes = gene.legSizes;
+            geneData.bodySizes = gene.bodySizes;
+            geneData.name = int.Parse(robots[0].name);
+            geneData.distance = (goal.transform.position - robots[0].transform.position).sqrMagnitude;
+            geneData.reward = gene.reward;
+            geneData.generation = generation;
+            geneDataList.Add(geneData);
+        }
+        SaveLoadManager2.Instance.SaveBestRobotData(geneDataList, generation);
+    }
     public void NewestRecord(){
         List<GeneData2> geneDataList = new List<GeneData2>();
         foreach (var robot in robots) {
             Gene2 gene = robot.GetComponent<JointController2>().gene;
             GeneData2 geneData = new GeneData2(gene);
             geneData.angles = gene.angles;
-            geneData.springs = gene.springs;
-            geneData.dumpers = gene.dumpers;
             geneData.legSizes = gene.legSizes;
             geneData.bodySizes = gene.bodySizes;
             geneData.name = int.Parse(robot.name);
@@ -368,13 +366,11 @@ public class SelectionManager2 : MonoBehaviour {
         if (geneDataList != null) {
             robots = new List<GameObject>();
             foreach (var geneData in geneDataList.geneDatas) {
-                GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, 0, 60));
+                GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, 0, 90));
                 //  public Gene(int numAngles, int numLegSizes)
-                robot.GetComponent<JointController2>().gene = new Gene2(geneData.angles.Count, geneData.legSizes.Count, geneData.springs.Count, geneData.dumpers.Count);
+                robot.GetComponent<JointController2>().gene = new Gene2(geneData.angles.Count, geneData.legSizes.Count);
                 for (int i = 0; i < geneData.angles.Count; i++) {
                     robot.GetComponent<JointController2>().gene.angles[i] = geneData.angles[i];
-                    robot.GetComponent<JointController2>().gene.springs[i] = geneData.springs[i];
-                    robot.GetComponent<JointController2>().gene.dumpers[i] = geneData.dumpers[i];
                 }
                 robot.GetComponent<JointController2>().gene.legSizes = geneData.legSizes;
                 robot.GetComponent<JointController2>().gene.bodySizes = geneData.bodySizes;

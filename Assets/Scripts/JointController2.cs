@@ -15,7 +15,7 @@ public class JointController2 : MonoBehaviour {
 
     private void Awake() {
         if (gene.angles.Count != joints.Count*jointPhase) {
-            gene = new Gene2(joints.Count*jointPhase, legParts.Count * 3, joints.Count*jointPhase, joints.Count*jointPhase);
+            gene = new Gene2(joints.Count*jointPhase, legParts.Count * 3);
         }
         ApplyGene();
     }
@@ -35,13 +35,11 @@ public class JointController2 : MonoBehaviour {
         for (int i = 0; i < joints.Count; i++) {
             var joint = joints[i];
             var angle = gene.angles[i + currentGeneIndex * joints.Count];
-            var strong = gene.springs[i + currentGeneIndex * joints.Count];
-            var damper = gene.dumpers[i + currentGeneIndex * joints.Count];
 
             var spring = joint.spring;
             spring.targetPosition = angle;
-            spring.spring = strong;  // 強度を十分に高く設定
-            spring.damper = damper;  // ダンピングを適用して安定化
+            spring.spring = 100f;  // 強度を十分に高く設定
+            spring.damper = 10f;  // ダンピングを適用して安定化
             joint.spring = spring;
             joint.useSpring = true;  // Springを有効にする
         }

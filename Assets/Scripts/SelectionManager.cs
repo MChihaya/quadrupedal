@@ -20,7 +20,7 @@ public class SelectionManager : MonoBehaviour {
         if (robots == null) {
             robots = new List<GameObject>();
             for (int i = 0; i < populationSize; i++) {
-                GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, 90, 90));
+                GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, 0, 90));
                 robots.Add(robot);
                 robot.name = "" + robotVersion;
                 robot.GetComponent<DisplayName>().SetName();
@@ -225,7 +225,7 @@ public class SelectionManager : MonoBehaviour {
     }
 
     void AddRobot() {
-        GameObject robot = Instantiate(robotPrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 90, 90));
+        GameObject robot = Instantiate(robotPrefab, new Vector3(0, 0, 0), Quaternion.Euler(0, 0, 90));
         robots.Add(robot);
         robot.name = "" + robotVersion;
         robot.GetComponent<DisplayName>().SetName();

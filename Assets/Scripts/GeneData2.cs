@@ -18,8 +18,6 @@ public class GeneData2 {
         legSizes = new List<float>(gene.legSizes);
         bodySizes = new List<float>(gene.bodySizes);
         name = gene.name;
-        springs = new List<float>(gene.springs);
-        dumpers = new List<float>(gene.dumpers);
     }
 }
 

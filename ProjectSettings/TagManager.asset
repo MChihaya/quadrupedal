@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Robot
   - Plane
+  - Goal
   layers:
   - Default
   - TransparentFX
