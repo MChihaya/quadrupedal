@@ -15,7 +15,7 @@ public class JointController2 : MonoBehaviour {
 
     private void Awake() {
         if (gene.robotBrain.InputSize != joints.Count + 5) {
-            int[] hiddenLayers = {3};
+            int[] hiddenLayers = {16, 3, 16, 5};
             gene = new Gene2(joints.Count+ 6, hiddenLayers, joints.Count, legParts.Count * 3);
         }
         MoveJoint();
@@ -53,7 +53,7 @@ public class JointController2 : MonoBehaviour {
         for (int i = 0; i < joints.Count; i++){
             var joint = joints[i];
             var spring = joint.spring;
-            spring.targetPosition = (float) nextAction[i] * 60f;
+            spring.targetPosition = (float) nextAction[i] * 10f;
             spring.spring = 100f;  // 強度を十分に高く設定
             spring.damper = 10f;  // ダンピングを適用して安定化
             joint.spring = spring;

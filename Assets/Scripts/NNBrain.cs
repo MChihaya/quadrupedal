@@ -83,7 +83,7 @@ public class NNBrain : Brain
             var b = Biases[i];
             if(i != HiddenLayers.Length) {
                 for(int c = 0; c < b.Column; c++) {
-                    output[0, c] = Tanh(output[0, c] + b[0, c]);
+                    output[0, c] = Sigmoid(output[0, c] + b[0, c]);
                 }
             }
             else {
