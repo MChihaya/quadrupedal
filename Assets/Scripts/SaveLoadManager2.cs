@@ -29,13 +29,24 @@ public class SaveLoadManager2 : MonoBehaviour {
             Destroy(gameObject);
         }
     }
-    private string filename = "neuroWithoutSize4";
+    private string filename = "neuroRewardChange";
     public void SaveRobotData(List<GeneData2> geneDataList, int generation) {
         DateTime now = DateTime.Now;
         string formatedNow = now.ToString("yyyyMMddHHmmss");
         string jsonData = JsonUtility.ToJson(new GeneDataList2(geneDataList));
         //string filePath = System.IO.Path.Combine("Assets", "robots_save_data.json");
         string filePathRecord = "SaveData/" + filename + "/" + string.Format("robots_save_data_{0}_{1}.json", generation, formatedNow);
+        Debug.Log(filePathRecord);
+        //System.IO.File.WriteAllText(filePath, jsonData);
+        System.IO.File.WriteAllText(filePathRecord, jsonData);
+        Debug.Log("Persistent Data Path: " + Application.persistentDataPath);
+    }
+    public void SaveBestRobotData(List<GeneData2> geneDataList, int generation) {
+        DateTime now = DateTime.Now;
+        string formatedNow = now.ToString("yyyyMMddHHmmss");
+        string jsonData = JsonUtility.ToJson(new GeneDataList2(geneDataList));
+        //string filePath = System.IO.Path.Combine("Assets", "robots_save_data.json");
+        string filePathRecord = "SaveData/" + filename + "/" + string.Format("best_robots_save_data_{0}_{1}.json", generation, formatedNow);
         Debug.Log(filePathRecord);
         //System.IO.File.WriteAllText(filePath, jsonData);
         System.IO.File.WriteAllText(filePathRecord, jsonData);

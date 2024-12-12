@@ -26,7 +26,7 @@ public class SelectionManager2 : MonoBehaviour {
         if (robots == null) {
             robots = new List<GameObject>();
             for (int i = 0; i < populationSize; i++) {
-                GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, 0, 0));
+                GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, 0, 90));
                 robots.Add(robot);
                 robot.name = "" + robotVersion;
                 robot.GetComponent<DisplayName>().SetName();
@@ -58,6 +58,7 @@ public class SelectionManager2 : MonoBehaviour {
             if(generation % 100 == 0){
                 ResultSave();
             }
+            SaveBestReward();
             // 適応度によって選別
             SelectAndReproduce();
             NewestRecord();
@@ -301,13 +302,14 @@ public class SelectionManager2 : MonoBehaviour {
                 robots[i].GetComponent<JointController2>().gene.legSizes[3*j+2] = legPartR.transform.localScale.z;
             }
             // 報酬値=距離の逆数＋(-20)×倒れたか
-            float reward = 0.0f;
-            reward -= 6 * (robots[i].transform.position - goal.transform.position).sqrMagnitude / goal.transform.position.sqrMagnitude;
-            if(robots[i].GetComponent<Rigidbody>().isKinematic){
-                reward -= (60.0f - robots[i].GetComponent<StopOnContact>().timer) * 0.1f;
-            }
+            //float reward = 0.0f;
+            //reward += 1 / (robots[i].transform.position - goal.transform.position).sqrMagnitude;
+            //reward -= 1 / robots[i].transform.position.sqrMagnitude;
+            // if(robots[i].GetComponent<Rigidbody>().isKinematic){
+            //     reward -= (60.0f - robots[i].GetComponent<StopOnContact>().timer) * 0.1f;
+            // }
             // reward = robots[i].transform.position.sqrMagnitude;
-            robots[i].GetComponent<JointController2>().gene.reward += reward;
+            // robots[i].GetComponent<JointController2>().gene.reward += reward;
         }
     }
 
@@ -340,6 +342,22 @@ public class SelectionManager2 : MonoBehaviour {
         SaveLoadManager2.Instance.SaveRobotData(geneDataList, generation);
     }
 
+    public void SaveBestReward(){
+        List<GeneData2> geneDataList = new List<GeneData2>();
+        for(int i = 0; i < 3; i ++){
+            Gene2 gene = robots[i].GetComponent<JointController2>().gene;
+            GeneData2 geneData = new GeneData2(gene);
+            geneData.robotdna = gene.robotBrain.ToDNA().ToList<double>();
+            geneData.legSizes = gene.legSizes;
+            geneData.bodySizes = gene.bodySizes;
+            geneData.name = int.Parse(robots[i].name);
+            geneData.distance = (goal.transform.position - robots[i].transform.position).sqrMagnitude;
+            geneData.reward = gene.reward;
+            geneData.generation = generation;
+            geneDataList.Add(geneData);
+        }
+        SaveLoadManager2.Instance.SaveBestRobotData(geneDataList, generation);
+    }
     public void NewestRecord(){
         List<GeneData2> geneDataList = new List<GeneData2>();
         foreach (var robot in robots) {
@@ -355,6 +373,7 @@ public class SelectionManager2 : MonoBehaviour {
         SaveLoadManager2.Instance.NewestRecordRobotData(geneDataList);
     }
 
+
     // Loadロジックの例
     public void Load() {
         GeneDataList2 geneDataList = SaveLoadManager2.Instance.LoadRobotData();
@@ -362,7 +381,7 @@ public class SelectionManager2 : MonoBehaviour {
             robots = new List<GameObject>();
             foreach (var geneData in geneDataList.geneDatas) {
                 GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, 0, 0));
-                robot.GetComponent<JointController2>().gene = new Gene2(robot.GetComponent<JointController2>().joints.Count + 5, 2 * robot.GetComponent<JointController2>().joints.Count, 1, robot.GetComponent<JointController2>().joints.Count, geneData.legSizes.Count * 3);
+                robot.GetComponent<JointController2>().gene = new Gene2(robot.GetComponent<JointController2>().joints.Count + 6, 2 * robot.GetComponent<JointController2>().joints.Count, 2, robot.GetComponent<JointController2>().joints.Count, geneData.legSizes.Count * 3);
                 robot.GetComponent<JointController2>().gene.robotBrain.SetDNA(geneData.robotdna.ToArray()); 
                 robot.GetComponent<JointController2>().gene.legSizes = geneData.legSizes;
                 robot.GetComponent<JointController2>().gene.bodySizes = geneData.bodySizes;
