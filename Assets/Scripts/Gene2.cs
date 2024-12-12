@@ -12,8 +12,8 @@ public class Gene2 {
     public float reward = 0f;
 
 
-    public Gene2(int inputSize, int hiddenSize, int hiddenLayers, int outputSize, int numLegSizes) {
-        robotBrain = new NNBrain(inputSize, hiddenSize, hiddenLayers, outputSize);
+    public Gene2(int inputSize, int[] hiddenLayers, int outputSize, int numLegSizes) {
+        robotBrain = new NNBrain(inputSize, hiddenLayers, outputSize);
         legSizes = new List<float>(numLegSizes);
         for (int i = 0; i < numLegSizes; i++) {
             legSizes.Add(0.25f);

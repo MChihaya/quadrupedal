@@ -23,12 +23,9 @@ public class NNBrain : Brain
     // 入力値の次元
     [SerializeField] private int inputSize = 0;
     public int InputSize { get { return inputSize; } private set { inputSize = value; } }
-    // 隠れ層のノードの数
-    [SerializeField] private int hiddenSize = 0;
-    public int HiddenSize { get { return hiddenSize; } private set { hiddenSize = value; } }
     // 隠れ層の層の数
-    [SerializeField] private int hiddenLayers = 0;
-    public int HiddenLayers { get { return hiddenLayers; } private set { hiddenLayers = value; } } // may be equal to 0
+    [SerializeField] private int[] hiddenLayers = new int[2];
+    public int[] HiddenLayers { get { return hiddenLayers; } private set { hiddenLayers = value; } } // may be equal to 0
     // 出力の次元
     [SerializeField] private int outputSize = 0;
     public int OutputSize { get { return outputSize; } private set { outputSize = value; } }
@@ -41,12 +38,11 @@ public class NNBrain : Brain
         return action;
     }
     // 初期化定義
-    public NNBrain(int inputSize, int hiddenSize, int hiddenLayers, int outputSize) {
+    public NNBrain(int inputSize, int[] hiddenLayers, int outputSize) {
         InputSize = inputSize;
         OutputSize = outputSize;
         HiddenLayers = hiddenLayers;
-        HiddenSize = hiddenSize;
-        CreateMatrix(inputSize, hiddenSize, hiddenLayers, outputSize);
+        CreateMatrix(inputSize, hiddenLayers, outputSize);
         InitAllMatrix();//行列をランダムに初期化する
     }
     // コピー
@@ -54,7 +50,6 @@ public class NNBrain : Brain
         InputSize = other.InputSize;
         OutputSize = other.OutputSize;
         HiddenLayers = other.HiddenLayers;
-        HiddenSize = other.HiddenSize;
 
         for(int i = 0; i < other.Weights.Count; i++) {
             Matrix w = other.Weights[i].Copy();
@@ -64,31 +59,31 @@ public class NNBrain : Brain
         }
     }
     // 行列の作成：各層の計算を行列で表している。
-    private void CreateMatrix(int inputSize, int hiddenSize, int hiddenLayers, int outputSize) {
+    private void CreateMatrix(int inputSize, int[] hiddenLayers, int outputSize) {
         int parameterNum = 0;
-        for(int i = 0; i < hiddenLayers + 1; i++) {
-            int inSize = (i == 0) ? inputSize : hiddenSize;
-            int outSize = (i == hiddenLayers) ? outputSize : hiddenSize;
+        for(int i = 0; i < hiddenLayers.Length + 1; i++) {
+            int inSize = (i == 0) ? inputSize : hiddenLayers[i - 1];
+            int outSize = (i == hiddenLayers.Length) ? outputSize : hiddenLayers[i];
             Weights.Add(new Matrix(inSize, outSize));
             Biases.Add(new Matrix(1, outSize));
             parameterNum += inSize * outSize + outSize;
         }
-        // Debug.Log($"Created a neural network with {parameterNum} parameters.{inputSize} {hiddenSize} {hiddenLayers} {outputSize}");
+        Debug.Log($"Created a neural network with {parameterNum} parameters.{inputSize} {hiddenLayers} {outputSize}");
     }
 
     // 順方向に計算する。
     public double[] Predict(double[] inputs) {
         var output = new Matrix(inputs);
         var result = new double[OutputSize];
-        for(int i = 0; i < HiddenLayers + 1; i++) {
+        for(int i = 0; i < HiddenLayers.Length + 1; i++) {
             if (output.Column != Weights[i].Row) {
                 throw new InvalidOperationException($"Dimension mismatch: output.Columns ({output.Column}) and Weights[{i}].Rows ({Weights[i].Row}) do not match. Please check sensor count.");
             }
             output = output.Mul(Weights[i]);
             var b = Biases[i];
-            if(i != HiddenLayers) {
+            if(i != HiddenLayers.Length) {
                 for(int c = 0; c < b.Column; c++) {
-                    output[0, c] = Sigmoid(output[0, c] + b[0, c]);
+                    output[0, c] = Tanh(output[0, c] + b[0, c]);
                 }
             }
             else {
@@ -162,7 +157,7 @@ public class NNBrain : Brain
     // 変異を行う：一定の確率で丸々ランダム化して、一定の確率で乱数で変わる。
     public NNBrain Mutate(int generation) {
         var c = new NNBrain(this);
-        for(int i = 0; i < c.HiddenLayers + 1; i++) {
+        for(int i = 0; i < c.HiddenLayers.Length + 1; i++) {
             c.Biases[i] = MutateLayer(Biases[i], generation);
             c.Weights[i] = MutateLayer(Weights[i], generation);
         }
