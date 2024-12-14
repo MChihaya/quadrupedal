@@ -29,7 +29,7 @@ public class SaveLoadManager2 : MonoBehaviour {
             Destroy(gameObject);
         }
     }
-    private String directory = "forward";
+    private String directory = "backwardright";
     public void SaveRobotData(List<GeneData2> geneDataList, int generation) {
         DateTime now = DateTime.Now;
         string formatedNow = now.ToString("yyyyMMddHHmmss");
