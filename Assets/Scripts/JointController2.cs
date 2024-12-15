@@ -7,7 +7,7 @@ public class JointController2 : MonoBehaviour {
     public List<HingeJoint> joints;
     public List<GameObject> legParts;
     public GameObject body;
-    public Movement[] movements;
+    public Movement[] movements = new Movement[8];
     public Gene2 gene;
     public GameObject goal;
     public int jointPhase = 10;
@@ -16,11 +16,12 @@ public class JointController2 : MonoBehaviour {
     private int nextAction;
     private int phase = 0;
 
-    private void Awake() {
+    public void Init() {
         if (gene.robotBrain.InputSize != 6) {
             int[] hiddenLayers = {16};
             gene = new Gene2(6, hiddenLayers, 8, legParts.Count * 3);
         }
+        
         MoveJoint();
     }
 
@@ -38,10 +39,10 @@ public class JointController2 : MonoBehaviour {
         
         if(phase == 0){
             var observation = new List<double>(); 
-            for (int i = 0; i < joints.Count; i++) {
-                var joint = joints[i];
-                observation.Add(joint.angle / 180f);
-            }
+            // for (int i = 0; i < joints.Count; i++) {
+            //     var joint = joints[i];
+            //     observation.Add(joint.angle / 180f);
+            // }
             Vector3 distance = goal.transform.position - body.transform.position;
             float distanceToGoal = distance.sqrMagnitude;
             observation.Add(distance.x / distanceToGoal);
@@ -84,7 +85,8 @@ public class JointController2 : MonoBehaviour {
         }
     }
     public void ChangeSizes(){
-        for (int i = 0; i < legParts.Count; i++){
+        
+        for (int i = 0; i < legParts.Count; i = i + 2){
             var legPartR = legParts[i];
             var legPartL = legParts[i + 1];
             var legSizeX = movements[nextAction].legSizes[3*i];
@@ -93,11 +95,11 @@ public class JointController2 : MonoBehaviour {
             legPartR.transform.localScale = new Vector3(legSizeX, legSizeY, legSizeZ);
             legPartL.transform.localScale = new Vector3(legSizeX, legSizeY, legSizeZ);
         }
-        for (int i = 0; i < 3; i++){
-            var bodySizeX = movements[nextAction].bodySizes[3*i];
-            var bodySizeY = movements[nextAction].bodySizes[3*i+1];
-            var bodySizeZ = movements[nextAction].bodySizes[3*i+2];
-            body.transform.localScale = new Vector3(bodySizeX, bodySizeY, bodySizeZ);
-        }
+
+        var bodySizeX = movements[nextAction].bodySizes[0];
+        var bodySizeY = movements[nextAction].bodySizes[1];
+        var bodySizeZ = movements[nextAction].bodySizes[2];
+        body.transform.localScale = new Vector3(bodySizeX, bodySizeY, bodySizeZ);
+
     }
 }

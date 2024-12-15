@@ -28,20 +28,19 @@ public class GeneDataList2 {
         this.geneDatas = geneDatas;
     }
 }
-
+[System.Serializable]
 public class MovementData {
-    public List<float> angles;
-    public List<float> bodySizes;
-    public List<float> legSizes;
-    //これより下は余計
+    public List<float> angles; // 複数の角度データ
+    public List<float> legSizes; // 複数の脚サイズ
+    public List<float> bodySizes; // 複数の体サイズ
     public List<float> springs;
-    public List<float> dampers;
-    public int name;
-    public int generation;
-    public float distance;
-    public float reward;
+    public List<float> dumpers;
+    public int name; // 識別用
+    public int generation; // 世代
+    public float distance; // 距離
+    public float reward; // 報酬
 }
-
+[System.Serializable]
 public class MovementDataList {
     public List<MovementData> geneDatas;
 

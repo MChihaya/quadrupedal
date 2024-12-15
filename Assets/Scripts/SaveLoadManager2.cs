@@ -73,7 +73,7 @@ public class SaveLoadManager2 : MonoBehaviour {
             return null;
         }
     }
-    private string[] wards = {"forward", "fowardright", "right", "backwardright", "backward", "backwardleft", "left", "forwardleft"};
+    private string[] wards = {"forward", "forwardright", "right", "backwardright", "backward", "backwardleft", "left", "forwardleft"};
     public List<MovementDataList> LoadMovementData() {
         List<MovementDataList> geneDataLists = new List<MovementDataList>();
         for(int i = 0;i < wards.Length; i++){

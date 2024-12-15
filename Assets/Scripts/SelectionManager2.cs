@@ -41,7 +41,9 @@ public class SelectionManager2 : MonoBehaviour {
         foreach(var robot in robots){
             robot.GetComponent<StopOnContact>().StartTimer();
             robot.GetComponent<JointController2>().goal = goal;
+            Debug.Log(movement.Length);
             robot.GetComponent<JointController2>().movements = movement;
+            robot.GetComponent<JointController2>().Init();
         }
         
         populationSizeSlider.value = robots.Count;
@@ -75,6 +77,7 @@ public class SelectionManager2 : MonoBehaviour {
                 robot.GetComponent<StopOnContact>().StartTimer();
                 robot.GetComponent<JointController2>().goal = goal;
                 robot.GetComponent<JointController2>().movements = movement;
+                robot.GetComponent<JointController2>().Init();
             }
         }
     }
@@ -404,6 +407,7 @@ public class SelectionManager2 : MonoBehaviour {
 
     public void MovementLoad(){
         List<MovementDataList> movementDataLists = SaveLoadManager2.Instance.LoadMovementData();
+        movement = new Movement[movementDataLists.Count];
         if (movementDataLists != null) {
             int i = 0;
             foreach(var movementDataList in movementDataLists) {
