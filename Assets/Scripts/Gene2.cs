@@ -24,3 +24,10 @@ public class Gene2 {
         }
     }
 }
+
+[System.Serializable]
+public class Movement {
+    public List<float> angles;
+    public List<float> bodySizes;
+    public List<float> legSizes;
+}

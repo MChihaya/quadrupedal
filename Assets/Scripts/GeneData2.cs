@@ -29,3 +29,23 @@ public class GeneDataList2 {
     }
 }
 
+public class MovementData {
+    public List<float> angles;
+    public List<float> bodySizes;
+    public List<float> legSizes;
+    //これより下は余計
+    public List<float> springs;
+    public List<float> dampers;
+    public int name;
+    public int generation;
+    public float distance;
+    public float reward;
+}
+
+public class MovementDataList {
+    public List<MovementData> geneDatas;
+
+    public MovementDataList(List<MovementData> movementDatas) {
+        this.geneDatas = movementDatas;
+    }
+}

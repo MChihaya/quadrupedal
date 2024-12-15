@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using UnityEngine;
 using System;
+using UnityEditor.Rendering;
 
 [Serializable]
 public class NNBrain : Brain
@@ -30,7 +31,7 @@ public class NNBrain : Brain
     [SerializeField] private int outputSize = 0;
     public int OutputSize { get { return outputSize; } private set { outputSize = value; } }
     // 観測値を得る
-    public double[] GetAction(List<double> observation) {
+    public int GetAction(List<double> observation) {
         if (observation.Count != InputSize) {
             throw new ArgumentException($"Input size mismatch: observation.Count ({observation.Count}) does not match the expected InputSize ({InputSize}). Please check if selected sensors match for the trained data and your custom brain.");
         }
@@ -72,7 +73,7 @@ public class NNBrain : Brain
     }
 
     // 順方向に計算する。
-    public double[] Predict(double[] inputs) {
+    int Predict(double[] inputs) {
         var output = new Matrix(inputs);
         var result = new double[OutputSize];
         for(int i = 0; i < HiddenLayers.Length + 1; i++) {
@@ -95,7 +96,7 @@ public class NNBrain : Brain
         for(int c = 0; c < OutputSize; c++) {
             result[c] = output[0, c];
         }
-        return result;
+        return Array.IndexOf(result, result.Max());
     }
     //　活性化：シグモイド関数
     private float Sigmoid(double x) {

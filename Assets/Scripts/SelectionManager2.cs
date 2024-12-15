@@ -11,6 +11,7 @@ public class SelectionManager2 : MonoBehaviour {
     public Slider survivalRateSlider;
     public Slider timeScaleSlider;
     public GameObject goalPrehab;
+    public Movement[] movement;
     public int populationSize = 50;
     public float generationTime = 60.0f;
     public float survivalRate = 0.3f; // 新しい変数: 生存率（上位何%を保持するか）
@@ -23,6 +24,7 @@ public class SelectionManager2 : MonoBehaviour {
     void Start() {
         //セーブデータがあればロードなければ初期化
         Load();
+        MovementLoad();
         if (robots == null) {
             robots = new List<GameObject>();
             for (int i = 0; i < populationSize; i++) {
@@ -39,6 +41,7 @@ public class SelectionManager2 : MonoBehaviour {
         foreach(var robot in robots){
             robot.GetComponent<StopOnContact>().StartTimer();
             robot.GetComponent<JointController2>().goal = goal;
+            robot.GetComponent<JointController2>().movements = movement;
         }
         
         populationSizeSlider.value = robots.Count;
@@ -71,6 +74,7 @@ public class SelectionManager2 : MonoBehaviour {
             foreach(var robot in robots){
                 robot.GetComponent<StopOnContact>().StartTimer();
                 robot.GetComponent<JointController2>().goal = goal;
+                robot.GetComponent<JointController2>().movements = movement;
             }
         }
     }
@@ -381,8 +385,8 @@ public class SelectionManager2 : MonoBehaviour {
             robots = new List<GameObject>();
             foreach (var geneData in geneDataList.geneDatas) {
                 GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, 0, 90));
-                int[] hiddenLayer = {16, 3, 16, 5};
-                robot.GetComponent<JointController2>().gene = new Gene2(robot.GetComponent<JointController2>().joints.Count + 6, hiddenLayer, robot.GetComponent<JointController2>().joints.Count, geneData.legSizes.Count * 3);
+                int[] hiddenLayer = {16};
+                robot.GetComponent<JointController2>().gene = new Gene2(6, hiddenLayer, 8, geneData.legSizes.Count * 3);
                 robot.GetComponent<JointController2>().gene.robotBrain.SetDNA(geneData.robotdna.ToArray()); 
                 robot.GetComponent<JointController2>().gene.legSizes = geneData.legSizes;
                 robot.GetComponent<JointController2>().gene.bodySizes = geneData.bodySizes;
@@ -395,6 +399,21 @@ public class SelectionManager2 : MonoBehaviour {
             }
 
             ChangeRobotSize();
+        }
+    }
+
+    public void MovementLoad(){
+        List<MovementDataList> movementDataLists = SaveLoadManager2.Instance.LoadMovementData();
+        if (movementDataLists != null) {
+            int i = 0;
+            foreach(var movementDataList in movementDataLists) {
+                var movementData = movementDataList.geneDatas[0];
+                movement[i] = new Movement();
+                movement[i].angles = movementData.angles;
+                movement[i].bodySizes = movementData.bodySizes;
+                movement[i].legSizes = movementData.legSizes;
+                i++;
+            }
         }
     }
 

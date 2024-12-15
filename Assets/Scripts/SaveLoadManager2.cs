@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 using System;
+using UnityEditor;
 
 
 public class SaveLoadManager2 : MonoBehaviour {
@@ -29,7 +30,7 @@ public class SaveLoadManager2 : MonoBehaviour {
             Destroy(gameObject);
         }
     }
-    private string filename = "dynamicNeuro2";
+    private string filename = "neuro8wards";
     public void SaveRobotData(List<GeneData2> geneDataList, int generation) {
         DateTime now = DateTime.Now;
         string formatedNow = now.ToString("yyyyMMddHHmmss");
@@ -71,5 +72,22 @@ public class SaveLoadManager2 : MonoBehaviour {
             Debug.Log("Save data file not found in " + filePath);
             return null;
         }
+    }
+    private string[] wards = {"forward", "fowardright", "right", "backwardright", "backward", "backwardleft", "left", "forwardleft"};
+    public List<MovementDataList> LoadMovementData() {
+        List<MovementDataList> geneDataLists = new List<MovementDataList>();
+        for(int i = 0;i < wards.Length; i++){
+            string filePath = "SaveData/" + wards[i] + ".json";
+            if (System.IO.File.Exists(filePath)) {
+                string jsonData = System.IO.File.ReadAllText(filePath);
+                MovementDataList movementDataList = JsonUtility.FromJson<MovementDataList>(jsonData);
+                Debug.Log("Loaded " + movementDataList.geneDatas.Count + " movements from " + filePath);
+                geneDataLists.Add(movementDataList);
+            } else {
+                Debug.Log("Save data file not found in " + filePath);
+                return null;
+            }
+        }
+        return geneDataLists;
     }
 }
