@@ -30,7 +30,7 @@ public class JointController2 : MonoBehaviour {
          if (timer >= timePerGene) {
             timer -= timePerGene;
             // gene.reward += 2000 / (body.transform.position - goal.transform.position).sqrMagnitude;
-            gene.reward += (goal.transform.position - body.transform.position).sqrMagnitude;
+            gene.reward -= (goal.transform.position - body.transform.position).sqrMagnitude;
             MoveJoint();
         }
     }

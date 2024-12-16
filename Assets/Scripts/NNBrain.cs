@@ -69,7 +69,7 @@ public class NNBrain : Brain
             Biases.Add(new Matrix(1, outSize));
             parameterNum += inSize * outSize + outSize;
         }
-        Debug.Log($"Created a neural network with {parameterNum} parameters.{inputSize} {hiddenLayers} {outputSize}");
+        //Debug.Log($"Created a neural network with {parameterNum} parameters.{inputSize} {hiddenLayers} {outputSize}");
     }
 
     // 順方向に計算する。
