@@ -12,7 +12,7 @@ public class SelectionManager2 : MonoBehaviour {
     public Slider timeScaleSlider;
     public GameObject goal;
     public int populationSize = 50;
-    public float generationTime = 10.0f;
+    public float generationTime = 15.0f;
     public float survivalRate = 0.3f; // 新しい変数: 生存率（上位何%を保持するか）
     private List<GameObject> robots;
     private float generationTimer = 0.0f;
@@ -46,7 +46,7 @@ public class SelectionManager2 : MonoBehaviour {
 
     void FixedUpdate() {
         generationTimer += Time.fixedDeltaTime;
-        //Debug.Log("Generation: " + generation + ", Generation Timer: " + generationTimer);
+        // Debug.Log("Generation: " + generation + ", Generation Timer: " + generationTimer);
         if (generationTimer >= generationTime || IsAllRobotStop()) {
             // ロボットのサイズを遺伝子に適用
             ApplyGene();

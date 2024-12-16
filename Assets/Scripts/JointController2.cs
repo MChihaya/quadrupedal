@@ -22,12 +22,25 @@ public class JointController2 : MonoBehaviour {
 
     private void FixedUpdate() {
         timer += Time.deltaTime;// timePerGene[s]ごとに足を動かす。
+        // Debug.Log(timer);
         if (timer >= timePerGene) {
             timer -= timePerGene;
             // currentGeneIndexは今何段階目の遺伝子かを表す
             // jointPhase回やってループする。
-            currentGeneIndex = (currentGeneIndex + 1) % jointPhase;
-            ApplyGene();
+            if (currentGeneIndex < 9){
+                currentGeneIndex = (currentGeneIndex + 1) % jointPhase;
+                ApplyGene();
+            }else {
+                for (int i = 0; i < joints.Count; i++) {
+                    var joint = joints[i];
+                    var spring = joint.spring;
+                    spring.targetPosition = 0f;
+                    spring.spring = 100f;  // 強度を十分に高く設定
+                    spring.damper = 10f;  // ダンピングを適用して安定化
+                    joint.spring = spring;
+                    joint.useSpring = true;  // Springを有効にする
+                }
+            }
         }
     }
     // 実際に足を動かしているところ

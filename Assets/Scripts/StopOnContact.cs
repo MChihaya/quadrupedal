@@ -22,7 +22,7 @@ public class StopOnContact : MonoBehaviour
         if (collision.gameObject.CompareTag("Plane"))
         {
             timer = Time.time - startTime;
-            GetComponent<JointController2>().gene.reward -= (10.0f  - timer) * 30f;
+            GetComponent<JointController2>().gene.reward -= (15.0f  - timer) * 30f;
             foreach (var rb in rbs)
             {   
                 rb.velocity = Vector3.zero;         // 移動速度をゼロに
@@ -31,15 +31,15 @@ public class StopOnContact : MonoBehaviour
             }
 
         }
-        if (collision.gameObject.CompareTag("Goal")){
-            timer = Time.time - startTime;
-            GetComponent<JointController2>().gene.reward += (10.0f - timer) * 30f;
-            foreach (var rb in rbs)
-            {   
-                rb.velocity = Vector3.zero;         // 移動速度をゼロに
-                rb.angularVelocity = Vector3.zero; // 回転速度をゼロに
-                rb.isKinematic = true;             // 動きを完全に停止
-            }
-        }
+        // if (collision.gameObject.CompareTag("Goal")){
+        //     timer = Time.time - startTime;
+        //     GetComponent<JointController2>().gene.reward += (10.0f - timer) * 30f;
+        //     foreach (var rb in rbs)
+        //     {   
+        //         rb.velocity = Vector3.zero;         // 移動速度をゼロに
+        //         rb.angularVelocity = Vector3.zero; // 回転速度をゼロに
+        //         rb.isKinematic = true;             // 動きを完全に停止
+        //     }
+        // }
     }
 }
