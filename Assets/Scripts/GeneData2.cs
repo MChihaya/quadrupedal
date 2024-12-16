@@ -6,8 +6,8 @@ using UnityEngine;
 [System.Serializable]
 public class GeneData2 {
     public List<double> robotdna;
-    public List<float> legSizes;
-    public List<float> bodySizes;
+    public List<float> legSizes; // 不要
+    public List<float> bodySizes; //不要
     public int name;
     public int generation;
     public float distance;

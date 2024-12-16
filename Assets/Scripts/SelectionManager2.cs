@@ -20,6 +20,7 @@ public class SelectionManager2 : MonoBehaviour {
     private float generationTimer = 0.0f;
     private int robotVersion = 0;
     private int generation = 0;
+    private int testCounter = 0;
 
     void Start() {
         //セーブデータがあればロードなければ初期化
@@ -55,7 +56,18 @@ public class SelectionManager2 : MonoBehaviour {
 
     void FixedUpdate() {
         generationTimer += Time.fixedDeltaTime;
-        if (generationTimer >= generationTime || IsAllRobotStop()) {
+        if(generationTimer >= generationTime){
+            Destroy(goal);
+            SetGoal();
+            foreach(var robot in robots){
+                robot.GetComponent<JointController2>().goal = goal;
+                robot.transform.position = new Vector3(0, 3, 0);
+                robot.transform.rotation = Quaternion.Euler(0, 0, 90);
+            }
+            testCounter++;
+            generationTimer = 0.0f;
+        }
+        if (testCounter == 10) {
             // ロボットのサイズを遺伝子に適用
             ApplyGene();
             Destroy(goal);
@@ -79,13 +91,14 @@ public class SelectionManager2 : MonoBehaviour {
                 robot.GetComponent<JointController2>().movements = movement;
                 robot.GetComponent<JointController2>().Init();
             }
+            testCounter = 0;
         }
     }
 
     void SetGoal(){
         // float radius = UnityEngine.Random.Range(20f, 50f);
         float radius = 50f;
-        float degree  = 0f; //UnityEngine.Random.Range(0f, 360f);
+        float degree = UnityEngine.Random.Range(0f, 360f);
         float x = radius * Mathf.Cos(degree * Mathf.Deg2Rad);
         float z = radius * Mathf.Sin(degree * Mathf.Deg2Rad);
         goal = Instantiate(goalPrehab, new Vector3(x, 0f, z), Quaternion.identity);
