@@ -42,7 +42,7 @@ public class SelectionManager2 : MonoBehaviour {
         foreach(var robot in robots){
             robot.GetComponent<StopOnContact>().StartTimer();
             robot.GetComponent<JointController2>().goal = goal;
-            Debug.Log(movement.Length);
+            // Debug.Log(movement.Length);
             robot.GetComponent<JointController2>().movements = movement;
             robot.GetComponent<JointController2>().Init();
         }
@@ -98,7 +98,7 @@ public class SelectionManager2 : MonoBehaviour {
     void SetGoal(){
         // float radius = UnityEngine.Random.Range(20f, 50f);
         float radius = 50f;
-        float degree = UnityEngine.Random.Range(0f, 360f);
+        float degree = 0f;//UnityEngine.Random.Range(0f, 360f);
         float x = radius * Mathf.Cos(degree * Mathf.Deg2Rad);
         float z = radius * Mathf.Sin(degree * Mathf.Deg2Rad);
         goal = Instantiate(goalPrehab, new Vector3(x, 0f, z), Quaternion.identity);
@@ -401,7 +401,7 @@ public class SelectionManager2 : MonoBehaviour {
             robots = new List<GameObject>();
             foreach (var geneData in geneDataList.geneDatas) {
                 GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, 0, 90));
-                int[] hiddenLayer = {16};
+                int[] hiddenLayer = {3};
                 robot.GetComponent<JointController2>().gene = new Gene2(6, hiddenLayer, 8, geneData.legSizes.Count * 3);
                 robot.GetComponent<JointController2>().gene.robotBrain.SetDNA(geneData.robotdna.ToArray()); 
                 robot.GetComponent<JointController2>().gene.legSizes = geneData.legSizes;

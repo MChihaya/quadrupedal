@@ -5,9 +5,9 @@ filePattern = fullfile(dirPath, 'best_robots_save_data_*.json'); % ファイル�
 jsonFiles = dir(filePattern); % パターンに一致するファイル一覧を取得
 
 % 初期化
-overallMaxReward = -inf; % 最も大きなreward値を記録
-overallBestEntry = []; % 対応するエントリ
-overallBestFile = ''; % 対応するファイル名
+maxRewards = [-inf, -inf, -inf]; % 上位3つのreward値を記録
+bestEntries = cell(1, 3);        % 対応するエントリを保存
+bestFiles = cell(1, 3);          % 対応するファイル名を保存
 
 % 各ファイルを処理
 for i = 1:length(jsonFiles)
@@ -24,26 +24,35 @@ for i = 1:length(jsonFiles)
         % reward値を抽出
         rewards = arrayfun(@(x) x.reward, geneDatas);
         
-        % ファイル内の最大reward値とそのインデックスを取得
-        [fileMaxReward, fileMaxIndex] = max(rewards);
-        
-        % 全体の最大値と比較・更新
-        if fileMaxReward > overallMaxReward
-            overallMaxReward = fileMaxReward;
-            overallBestEntry = geneDatas(fileMaxIndex);
-            overallBestFile = filePath;
+        % 各rewardを処理して上位3つを更新
+        for j = 1:length(rewards)
+            currentReward = rewards(j);
+            if currentReward > min(maxRewards)
+                % 最小値を置き換える
+                [~, minIndex] = min(maxRewards);
+                maxRewards(minIndex) = currentReward;
+                bestEntries{minIndex} = geneDatas(j);
+                bestFiles{minIndex} = filePath;
+            end
         end
     else
         fprintf('警告: ファイル "%s" に "geneDatas" フィールドが存在しません。\n', filePath);
     end
 end
 
+% 最大値でソート
+[maxRewards, sortIdx] = sort(maxRewards, 'descend');
+bestEntries = bestEntries(sortIdx);
+bestFiles = bestFiles(sortIdx);
+
 % 結果の表示
-if ~isempty(overallBestEntry)
-    fprintf('全ファイル中の最大のreward値: %f\n', overallMaxReward);
-    fprintf('対応するデータ:\n');
-    disp(overallBestEntry);
-    fprintf('ファイル名: %s\n', overallBestFile);
-else
-    fprintf('適切なデータが見つかりませんでした。\n');
+for rank = 1:3
+    if ~isempty(bestEntries{rank})
+        fprintf('Top %d の reward 値: %f\n', rank, maxRewards(rank));
+        fprintf('対応するデータ:\n');
+        disp(bestEntries{rank});
+        fprintf('ファイル名: %s\n', bestFiles{rank});
+    else
+        fprintf('Top %d のデータは見つかりませんでした。\n', rank);
+    end
 end

@@ -13,12 +13,12 @@ public class JointController2 : MonoBehaviour {
     public int jointPhase = 10;
     public float timePerGene = 0.1f;
     private float timer = 0.0f;
-    private int nextAction;
+    public int nextAction;
     private int phase = 0;
 
     public void Init() {
         if (gene.robotBrain.InputSize != 6) {
-            int[] hiddenLayers = {16};
+            int[] hiddenLayers = {3};
             gene = new Gene2(6, hiddenLayers, 8, legParts.Count * 3);
         }
         
