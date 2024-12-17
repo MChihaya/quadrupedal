@@ -68,7 +68,7 @@ public class SelectionManager2 : MonoBehaviour {
             testCounter++;
             generationTimer = 0.0f;
         }
-        if (testCounter == 10) {
+        if (testCounter == 100) {
             // ロボットのサイズを遺伝子に適用
             ApplyGene();
             Destroy(goal);
@@ -176,7 +176,7 @@ public class SelectionManager2 : MonoBehaviour {
         double[] parent1_dna = parent1.robotBrain.ToDNA();
         double[] parent2_dna = parent2.robotBrain.ToDNA();
         // Decide the crossover point for angles
-        int crossoverPointAngles = parent1_dna.Length;//UnityEngine.Random.Range(0, parent1_dna.Length);
+        int crossoverPointAngles = UnityEngine.Random.Range(0, parent1_dna.Length);
         for (int i = 0; i < parent1_dna.Length; i++) {
             child_dna[i] = i < crossoverPointAngles ? parent1_dna[i] : parent2_dna[i];
         }
@@ -398,8 +398,8 @@ public class SelectionManager2 : MonoBehaviour {
             robots = new List<GameObject>();
             foreach (var geneData in geneDataList.geneDatas) {
                 GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, UnityEngine.Random.Range(-180f,180f), 90));
-                int[] hiddenLayer = {8};
-                robot.GetComponent<JointController2>().gene = new Gene2(6, hiddenLayer, 8, geneData.legSizes.Count * 3);
+                int[] hiddenLayer = {8, 8};
+                robot.GetComponent<JointController2>().gene = new Gene2(3, hiddenLayer, 8, geneData.legSizes.Count * 3);
                 robot.GetComponent<JointController2>().gene.robotBrain.SetDNA(geneData.robotdna.ToArray()); 
                 robot.GetComponent<JointController2>().gene.legSizes = geneData.legSizes;
                 robot.GetComponent<JointController2>().gene.bodySizes = geneData.bodySizes;

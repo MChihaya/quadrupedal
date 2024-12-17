@@ -18,8 +18,8 @@ public class JointController2 : MonoBehaviour {
 
     public void Init() {
         if (gene.robotBrain.InputSize != 6) {
-            int[] hiddenLayers = {8};
-            gene = new Gene2(6, hiddenLayers, 8, legParts.Count * 3);
+            int[] hiddenLayers = {8, 8};
+            gene = new Gene2(3, hiddenLayers, 8, legParts.Count * 3);
         }
         
         MoveJoint();
@@ -47,10 +47,7 @@ public class JointController2 : MonoBehaviour {
             float distanceToGoal = distance.sqrMagnitude;
             observation.Add(distance.x / distanceToGoal);
             observation.Add(distance.z / distanceToGoal);
-            observation.Add(body.transform.rotation.x);
-            observation.Add(body.transform.rotation.y);
-            observation.Add(body.transform.rotation.z);
-            observation.Add(body.transform.rotation.w);
+            observation.Add(body.transform.eulerAngles.y / 360f);
             //observation.Add(GetComponent<Rigidbody>().velocity.x / 10f);
             //observation.Add(GetComponent<Rigidbody>().velocity.z / 10f);
             nextAction = gene.robotBrain.GetAction(observation);

@@ -213,7 +213,7 @@ MonoBehaviour:
   goalPrehab: {fileID: 8203172306540753689, guid: 9c383aed9c5ec174dab925bfe3bfb600,
     type: 3}
   movement: []
-  populationSize: 50
+  populationSize: 200
   generationTime: 15
   survivalRate: 0.5
 --- !u!4 &84154002
@@ -1073,7 +1073,7 @@ PrefabInstance:
     - target: {fileID: 8502566608509216557, guid: 56f02f8f6a7cca844abdc16e8e5e85e0,
         type: 3}
       propertyPath: m_MaxValue
-      value: 20
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 8502566608509216557, guid: 56f02f8f6a7cca844abdc16e8e5e85e0,
         type: 3}
