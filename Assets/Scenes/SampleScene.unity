@@ -212,8 +212,9 @@ MonoBehaviour:
   timeScaleSlider: {fileID: 553501757}
   goalPrehab: {fileID: 8203172306540753689, guid: 9c383aed9c5ec174dab925bfe3bfb600,
     type: 3}
+  movement: []
   populationSize: 50
-  generationTime: 60
+  generationTime: 15
   survivalRate: 0.5
 --- !u!4 &84154002
 Transform:

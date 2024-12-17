@@ -30,7 +30,7 @@ public class SaveLoadManager2 : MonoBehaviour {
             Destroy(gameObject);
         }
     }
-    private string filename = "neuro8wards2";
+    private string filename = "neuro8wards4";
     public void SaveRobotData(List<GeneData2> geneDataList, int generation) {
         DateTime now = DateTime.Now;
         string formatedNow = now.ToString("yyyyMMddHHmmss");

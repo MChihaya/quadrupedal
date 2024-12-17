@@ -18,7 +18,7 @@ public class JointController2 : MonoBehaviour {
 
     public void Init() {
         if (gene.robotBrain.InputSize != 6) {
-            int[] hiddenLayers = {3};
+            int[] hiddenLayers = {8};
             gene = new Gene2(6, hiddenLayers, 8, legParts.Count * 3);
         }
         
@@ -30,7 +30,7 @@ public class JointController2 : MonoBehaviour {
          if (timer >= timePerGene) {
             timer -= timePerGene;
             // gene.reward += 2000 / (body.transform.position - goal.transform.position).sqrMagnitude;
-            gene.reward -= (goal.transform.position - body.transform.position).sqrMagnitude;
+            
             MoveJoint();
         }
     }

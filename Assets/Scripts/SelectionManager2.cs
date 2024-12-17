@@ -29,7 +29,7 @@ public class SelectionManager2 : MonoBehaviour {
         if (robots == null) {
             robots = new List<GameObject>();
             for (int i = 0; i < populationSize; i++) {
-                GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, 0, 90));
+                GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, UnityEngine.Random.Range(-180f,180f), 90));
                 robots.Add(robot);
                 robot.name = "" + robotVersion;
                 robot.GetComponent<DisplayName>().SetName();
@@ -57,12 +57,13 @@ public class SelectionManager2 : MonoBehaviour {
     void FixedUpdate() {
         generationTimer += Time.fixedDeltaTime;
         if(generationTimer >= generationTime){
+            GiveReward();
             Destroy(goal);
             SetGoal();
             foreach(var robot in robots){
                 robot.GetComponent<JointController2>().goal = goal;
                 robot.transform.position = new Vector3(0, 3, 0);
-                robot.transform.rotation = Quaternion.Euler(0, 0, 90);
+                robot.transform.rotation = Quaternion.Euler(0, UnityEngine.Random.Range(-180f,180f), 90);
             }
             testCounter++;
             generationTimer = 0.0f;
@@ -97,7 +98,7 @@ public class SelectionManager2 : MonoBehaviour {
 
     void SetGoal(){
         // float radius = UnityEngine.Random.Range(20f, 50f);
-        float radius = 50f;
+        float radius = 15f;
         float degree = UnityEngine.Random.Range(0f, 360f);
         float x = radius * Mathf.Cos(degree * Mathf.Deg2Rad);
         float z = radius * Mathf.Sin(degree * Mathf.Deg2Rad);
@@ -110,7 +111,11 @@ public class SelectionManager2 : MonoBehaviour {
         }
         return isAllRobotStopBool;
     }
-
+    void GiveReward(){
+        foreach(var robot in robots){
+            robot.GetComponent<JointController2>().gene.reward -= (goal.transform.position - robot.transform.position).sqrMagnitude;
+        }
+    }
     void SortRobotByReward(){
         // 報酬値でソート
         robots.Sort((a, b) => b.GetComponent<JointController2>().gene.reward.CompareTo(a.GetComponent<JointController2>().gene.reward));
@@ -171,7 +176,7 @@ public class SelectionManager2 : MonoBehaviour {
         double[] parent1_dna = parent1.robotBrain.ToDNA();
         double[] parent2_dna = parent2.robotBrain.ToDNA();
         // Decide the crossover point for angles
-        int crossoverPointAngles = UnityEngine.Random.Range(0, parent1_dna.Length);
+        int crossoverPointAngles = parent1_dna.Length;//UnityEngine.Random.Range(0, parent1_dna.Length);
         for (int i = 0; i < parent1_dna.Length; i++) {
             child_dna[i] = i < crossoverPointAngles ? parent1_dna[i] : parent2_dna[i];
         }
@@ -321,15 +326,7 @@ public class SelectionManager2 : MonoBehaviour {
                 robots[i].GetComponent<JointController2>().gene.legSizes[3*j+1] = legPartR.transform.localScale.y;
                 robots[i].GetComponent<JointController2>().gene.legSizes[3*j+2] = legPartR.transform.localScale.z;
             }
-            // 報酬値=距離の逆数＋(-20)×倒れたか
-            //float reward = 0.0f;
-            //reward += 1 / (robots[i].transform.position - goal.transform.position).sqrMagnitude;
-            //reward -= 1 / robots[i].transform.position.sqrMagnitude;
-            // if(robots[i].GetComponent<Rigidbody>().isKinematic){
-            //     reward -= (60.0f - robots[i].GetComponent<StopOnContact>().timer) * 0.1f;
-            // }
-            // reward = robots[i].transform.position.sqrMagnitude;
-            // robots[i].GetComponent<JointController2>().gene.reward += reward;
+
         }
     }
 
@@ -400,8 +397,8 @@ public class SelectionManager2 : MonoBehaviour {
         if (geneDataList != null) {
             robots = new List<GameObject>();
             foreach (var geneData in geneDataList.geneDatas) {
-                GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, 0, 90));
-                int[] hiddenLayer = {3};
+                GameObject robot = Instantiate(robotPrefab, new Vector3(0, 3, 0), Quaternion.Euler(0, UnityEngine.Random.Range(-180f,180f), 90));
+                int[] hiddenLayer = {8};
                 robot.GetComponent<JointController2>().gene = new Gene2(6, hiddenLayer, 8, geneData.legSizes.Count * 3);
                 robot.GetComponent<JointController2>().gene.robotBrain.SetDNA(geneData.robotdna.ToArray()); 
                 robot.GetComponent<JointController2>().gene.legSizes = geneData.legSizes;
