@@ -47,7 +47,7 @@ def plot_graph(generations, best, second, third):
     plt.plot(generations, third, '^-', label='Third Best', color='brown', markersize=6)
     
     plt.title("Highly rewarded robots")
-    plt.xlim([0, 40])
+    # plt.xlim([0, 40])
     plt.xlabel("Generation")
     plt.ylabel("Reward")
     plt.legend()
@@ -56,7 +56,7 @@ def plot_graph(generations, best, second, third):
 # 4. メイン処理
 if __name__ == "__main__":
     # ファイル名パターンを指定（例: カレントディレクトリ内のbest_robots_save_data_*.json）
-    file_pattern = "./SaveData/forwardleft2/best_robots_save_data_*.json"
+    file_pattern = "./SaveData/neuro8wards4/best_robots_save_data_*.json"
     
     # JSONファイルを読み込む
     json_data = load_json_files(file_pattern)
