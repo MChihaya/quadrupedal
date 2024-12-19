@@ -119,7 +119,7 @@
   }
 
   // Start two column mode and configure paragraph properties.
-  show: columns.with(1, gutter: 8mm)
+  show: columns.with(2, gutter: 8mm)
 
   // Display the paper's contents.
   body
